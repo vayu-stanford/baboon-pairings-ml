@@ -3,8 +3,6 @@ sys.path.append('../common')
 import extract
 import pca_vis
 import manifold_vis
-from sklearn import decomposition
-from sklearn.preprocessing import scale
 from sklearn.cluster import KMeans
 
 RANDOM_SEED=5
