@@ -13,8 +13,6 @@ def plot_2d_labelled(X,y):
     for (i,label) in enumerate(label_set):
         colormap[label]=cm(1.*i/len(label_set))
 
-    print colormap
-
     colors=[]
     for yi in y:
         colors.append(colormap[yi])
