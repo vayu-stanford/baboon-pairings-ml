@@ -15,7 +15,6 @@ def generate_labelled_data(valid_labels=None, label_type='consort', include_tran
         feature_list= feature_list + transformed_features
     feature_idxs = get_rawdata_idxs_for_cols(feature_list)
     label_idxs = get_rawdata_idxs_for_cols([label_type])
-    print label_idxs
     return extract_labelled_data(feature_idxs, label_idxs, valid_labels)
 
 def extract_labelled_data(feature_idxs, label_idxs, valid_labels):

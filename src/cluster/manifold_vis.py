@@ -22,5 +22,5 @@ def manifold_vis_3d(label_type, include_transformed):
     X = apply_manifold(X, 3)
     visualize_labels.plot_3d_labelled(X,y)
 
-#manifold_vis_2d('consort', False)
-manifold_vis_2d('consort', True)
+manifold_vis_3d('consort', False)
+#manifold_vis_3d('consort', True)
