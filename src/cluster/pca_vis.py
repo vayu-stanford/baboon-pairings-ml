@@ -12,15 +12,17 @@ def apply_pca(X, num_components):
     X = pca.transform(X)
     return X
 
-def pca_vis_2d(label_type, include_transformed):
-    (X,y) = extract.generate_labelled_data(label_type=label_type,include_transformed=include_transformed)
+def pca_vis_2d(X, y):
     X = apply_pca(X, 2)
     visualize_labels.plot_2d_labelled(X,y)
 
-def pca_vis_3d(label_type, include_transformed):
-    (X,y) = extract.generate_labelled_data(label_type=label_type, include_transformed=include_transformed)
+def pca_vis_3d(X, y):
     X = apply_pca(X, 3)
     visualize_labels.plot_3d_labelled(X,y)
 
-pca_vis_2d('consort', True)
-pca_vis_2d('consort', False)
+def main():
+    (X,y) = extract.generate_labelled_data(include_transformed=include_transformed)
+    pca_vis_2d(X,y, include_transformed)
+
+if __name__=="__main__":
+    main()
