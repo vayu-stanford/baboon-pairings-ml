@@ -1,0 +1,144 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.4 (15/5/16)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com) with extensive modifications by
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside,twocolumn,paper=letter]{article}
+\usepackage[cm]{fullpage} 
+
+\usepackage{blindtext} % Package to generate dummy text throughout this template 
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage[protrusion=true,expansion=true]{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[english]{babel} % Language hyphenation and typographical rules
+
+%\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+
+\usepackage{enumitem} % Customized lists
+\setlist[itemize]{noitemsep} % Make itemize lists more compact
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\roman{subsection}} % roman numerals for subsections
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+%\fancyhead[C]{Running title $\bullet$ May 2016 $\bullet$ Vol. XXI, No. 1} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+\usepackage{titling} % Customizing the title section
+
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\setlength{\droptitle}{-4\baselineskip} % Move the title up
+
+\pretitle{\begin{center}\Large\bfseries} % Article title formatting
+\posttitle{\end{center}} % Article title closing formatting
+\title{Appling Machine Learning to Predict and Explain Primate Consortship} % Article title
+\author{%
+\textsc{Josh King} \\[1ex] 
+\and 
+\textsc{Vayu Kishore} \\[1ex] 
+\and 
+\textsc{Filippo Ranalli} \\[1ex] 
+}
+\date{} % Leave empty to omit a date
+\renewcommand{\maketitlehookd}{%
+%\begin{abstract}
+%\noindent \blindtext % Dummy abstract text - replace \blindtext with your abstract text
+%\end{abstract}
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+% Print the title
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+
+\lettrine[nindent=0em,lines=3]{L} orem ipsum dolor sit amet, consectetur adipiscing elit.
+% describe prior work
+\blindtext % Dummy text
+
+%------------------------------------------------
+
+\section{Dataset}
+% describe source
+% describe raw features
+% describe transformed features
+% describe special characteristics (imbalanced labels)
+\section{Methods}
+\subsection{Classification}
+\subsection{Clustering}
+\subsection{Graphical Approach}
+
+%------------------------------------------------
+
+\section{Results}
+\subsection{Classification}
+\subsection{Clustering}
+\subsection{Graphical Approach}
+
+%------------------------------------------------
+
+\section{Discussion}
+\section{Next Steps}
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+
+\bibitem[Tung et al., 2012]{Tung:2012}
+  Jenny Tung, Marie J. E. Charpentier, Sayan Mukherjee, Jeanne Altmann, and Susan C. Alberts (2012)
+\newblock 
+  Genetic Effects on Mating Success and Partner Choice in a Social Mammal.
+\newblock {\em The American Naturalist}, 2012 180:1, 113--129.
+ 
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
