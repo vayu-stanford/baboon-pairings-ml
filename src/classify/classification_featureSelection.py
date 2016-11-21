@@ -17,7 +17,7 @@ gaussian_svm_backward_feature_selection_errors = []
 for j in range(2,14):
 	K=5
 	valid_labels=('1','0')
-	attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
+	attrs=np.loadtxt('../../data/rawdata.csv',delimiter=',',usecols=range(j))
 	labels=np.genfromtxt('data_file.csv',delimiter=',',usecols=[15],dtype='str')
 	cv=KFold(labels.shape[0],K)
 	correct=0
