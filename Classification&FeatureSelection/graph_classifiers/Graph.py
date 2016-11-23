@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.linalg import norm
 import random
 random.seed(10)
 class Graph:
@@ -153,6 +154,26 @@ class Graph:
                     labels.append(label)
                     
         return zip(attrs,labels)
+    
+    #Returns which class is closer to the example from all attrs
+    def dist_to_example(self,example):
+        class0_dist=0.0
+        class1_dist=0.0
+        num_class0=0
+        num_class1=0
+        for pair in self.attrs:
+            for i in range(len(self.attrs[pair])):
+                if self.edge_class[pair][i]==0:
+                    num_class0+=1
+                    class0_dist+=norm(np.array(self.attrs[pair][i])-np.array(example))
+                else:
+                    num_class1+=1
+                    class1_dist+=norm(np.array(self.attrs[pair][i])-np.array(example))
+        if class1_dist*num_class0>class0_dist*num_class1:
+            return 1
+        else:
+            return 0
+        
         
     def print_stats(self):
         print "Num Nodes:",len(self.edge_list)

@@ -201,7 +201,8 @@ the number of clusters.
 One approach to this problem is to use the interactions as edges and the baboons as nodes. Due to only heterosexual interactions occurring this means that the resulting graph is bipartite. The classification then becomes  an edge prediction task. Most previous work on this has been on just predicting whether or not edges exist, not predicting the label of the edge. We adapted current methods to predict the label of an edge rather than whether or not it exists. \\
 \cite{Macskassy:2007} use a simple method that computes the similarities of the attributes of nodes to determine the weight of latent edges between nodes. Because most of the attributes are not inherent to the baboons, but are depdendent on the scenario in which interactions occur we adapt this method to look at the similarity between the proposed edge and already existing edges between those two nodes. More formally, if there is some set of nodes $V$ and some set of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some associated label $l_i\in \{0,1\}$ then to determine the label of a new edge $e_n$ between nodes $u$ and $v$ we would compute 
 $$argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E}1\{l_i=label\}}$$
-We implemented this method, and also at a more specific method where instead of looking at all edges, we only look at edges where $u$ or $v$ are one of the endpoints of the edge. Both of these models end up being very similar to locally weighted regression so we compare that also. 
+We implemented this method, and also at a more specific method where instead of looking at all edges, we only look at edges where $u$ or $v$ are one of the endpoints of the edge. Both of these models end up being very similar to locally weighted regression so we implemented that and compare that also. \\
+
 \section{Results and Discussion}
 \subsection{Exploratory Data Analysis}
 \begin{figure}
@@ -280,7 +281,7 @@ high for us to interpret reasonably.
 \subsection{Graphical Approach}
 
 %------------------------------------------------
-
+Of the three methods using graph theory that we implemented none performed particularly well so far. For all methods we used 5 folds of cross-validation to get test data and averaged across those folds. We always kept at least one one edge between each pair of nodes in the training data. For the latent edge prediction we got a F1 score of .08, for the latent edge prediction only using edges where one of the endpoints is one of the nodes in the test example we got a F1 score of .25. And using locally weighted regression we got an F1 score of .24. While none of these F1 scores are particularly good the more specific latent edge prediction is noteworthy in that about one third of examples there were no positive classes in the utilized training examples. This guarantees that it would predict a negative class, which would drastically hurt the F1 score. So any method to improve this, such as a back-off model that would resort to another model in these cases would be very beneficial.
 \section{Next Steps}
 
 The analysis that we have performed until now used the features directly from
@@ -292,7 +293,9 @@ Additionally, we plan to continue investigating clustering methods. Since we
 cannot easily pick out clusters from lower dimensional representations of the
 data, we are especially interested in exploring methods that can automatically
 determine the number of clusters within our data, without creating an excessive
-number of clusters.
+number of clusters. Some ideas are silhouette scores and graphing total cost vs. number of clusters to see if some sort of ``elbow'' exists.
+
+For graphical analysis we will look at models that ignore many of the edge attributes and instead focus on what sort of information can be gained purely from the graph structure. Specifically we would like to adapt status and balance theory to work on bipartite graphs. While these models are unlikely to be good classifiers in and of themselves, they will utilize features that other models such as SVMs cannot see. So ensembles with SVMs and graph models are likely to provide better performance than only SVMs.
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST

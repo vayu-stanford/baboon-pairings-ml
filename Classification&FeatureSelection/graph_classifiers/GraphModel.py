@@ -12,6 +12,8 @@ class GraphModel:
             self.model=SpecificModel(graph,options)
         if model_type=='locallyweighted':#Each gorilla learns its own model
             self.model=LocallyWeightedModel(graph,options)
+        if model_type=='globaledge':#Each gorilla learns its own model
+            self.model=GlobalEdgeModel(graph,options)
     def predict(self,attrs):
         return self.model.predict(attrs)
     
@@ -108,13 +110,34 @@ class LocallyWeightedModel:
     def dist(self,attr1,attr2):
         return norm(attr1-attr2)
 
+class GlobalEdgeModel:
+    #Doesn't actually learn a model, instead it essentially does locally weighted regression
+    def __init__(self,graph,options):
+        self.graph=graph
+
+    def predict(self,attrs):#attrs is a dict of (id1,id2) to attrs
+        preds={}
+        j=0
+        for node1,node2 in attrs:
+            preds[(node1,node2)]=[]            
+            print j
+            for attr in attrs[(node1,node2)]:
+                preds[(node1,node2)].append(self.graph.dist_to_example(attr))
+            preds[(node1,node2)]=np.array(preds[(node1,node2)])
+            j+=1
+        return preds
+
+    def dist(self,attr1,attr2):
+        return norm(attr1-attr2)
+
+
 if __name__=='__main__':
     from Graph import Graph
     g=Graph('../../data/rawdata.csv')
     (graphs,test_classes,test_attrs)=g.create_k_subgraphs()    
 #    g.print_stats()
 #    graphs[0].print_stats()
-    GM=GraphModel(graphs[0],'locallyweighted',[.5])
+    GM=GraphModel(graphs[0],'globaledge',[.5])
     GM.predict_with_stats(test_attrs[0],test_classes[0])
 
 #    GM=GraphModel(graphs[0],'general',[.5])
