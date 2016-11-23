@@ -25,6 +25,23 @@ def extract_labelled_data(feature_idxs, label_idxs, valid_labels):
     attrs=attrs[valid_indices,:]
     return [attrs, labels]
 
+def get_feature_names(valid_labels=None, label_type='consort', include_transformed=True):
+    ''' Generate attributes and labels '''
+    feature_list = base_features
+    if include_transformed:
+        feature_list= feature_list + transformed_features
+    feature_idxs = get_rawdata_idxs_names_for_cols(feature_list)
+    sorted_features = sorted(feature_idxs,key=lambda x:x[0])
+    feature_names = map(lambda x:x[1],sorted_features)
+    return feature_names
+
+def get_rawdata_idxs_names_for_cols(feature_names):
+    idxs = []
+    for (idx, column) in enumerate(COLUMN_NAMES):
+        if column in feature_names:
+            idxs.append([idx,column])
+    return idxs
+
 def get_rawdata_idxs_for_cols(feature_names):
     idxs = []
     for (idx, column) in enumerate(COLUMN_NAMES):
