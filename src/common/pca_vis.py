@@ -21,8 +21,9 @@ def pca_vis_3d(X, y):
     visualize_labels.plot_3d_labelled(X,y)
 
 def main():
+    include_transformed=True
     (X,y) = extract.generate_labelled_data(include_transformed=include_transformed)
-    pca_vis_2d(X,y, include_transformed)
+    pca_vis_2d(X,y)
 
 if __name__=="__main__":
     main()

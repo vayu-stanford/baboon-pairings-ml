@@ -24,7 +24,7 @@ def main():
     (X, preds) = apply_kmeans_consort(4,include_transformed=include_transformed)
     # PCA is faster, but manifold gives better separation
     # pca_vis.pca_vis_2d(X, preds)
-    manifold_vis.manifold_vis_3d(X, preds)
+    manifold_vis.manifold_vis_2d(X, preds)
 
 if __name__=="__main__":
     main()

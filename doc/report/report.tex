@@ -97,50 +97,139 @@
 
 \section{Introduction}
 
-\lettrine[nindent=0em,lines=3]{L} orem ipsum dolor sit amet, consectetur adipiscing elit.
+\lettrine[nindent=0em,lines=3]{T}
 % describe prior work
-\blindtext % Dummy text
+Investigating this topic will provide deeper insight into the factors of
+mating success in baboons as well as other social mammals, such as humans.\\
+
+To investigate this, we apply machine learning methods to investigate the
+behavioral and genetic reasons for success and failure of mating between baboon
+pairs. Our analysis applies machine learning methods to examine whether
+successful consortships can be predicted, and whether certain behavioral or genetic
+features are especially relevant in determining consortship. Additionally, we
+investigate whether successful and unsuccessful pairs can be clustered, and
+whether there are certain clusters present in one group that are not present in
+the other.
 
 %------------------------------------------------
 
+\section{Related Work}
+\cite{Tung:2012} examined the impact of behavioral and genetic effects on
+consortship between 
 \section{Dataset}
-% describe source
-% describe raw features
-% describe transformed features
-% describe special characteristics
-%   imbalanced labels
-%   ordinal features (ranks)
-%   transformed features
+The dataset that we use was collected and analyzed using statistical methods by
+\cite{Tung:2012}, as described in Related Work. It contains observations about
+the success of potential baboon mating pairs. In particular, it specifies if ,
+male/female baboon pairings were successful in consorting when given the
+opportunity.  There are approximately 12,000 observations, and the features are
+a mix of behavioral data such as the rank difference between the male and female
+pair, as well as genetic data, such as the estimated genetic distance between
+the pair. 
+\subsection{Features}
+There are several categories of features present within the dataset.
+\begin{itemize}
+  \item{\textbf{Observed biological and genetic features}: These include female age
+    and conceptiveness, as well as the estimated genetic diversity and genetic
+    distance between the mating pair.}
+  \item{\textbf{Observed behavioral features}: These include rank of the mating pair
+    within the social heirarchy of the group and how many males and females from
+    their group were present when the interaction of the pair took place.}
+  \item{\textbf{Transformed Pairwise Features}: Some features are
+    transformations applied to the observed features described above, which were
+    computed by \cite{Tung:2012}. Some of the transformations compute a pairwise
+    score based on a combination of the male and female attributes. For example,
+    the rank\_interact feature represents the combination of male and female
+    ranks.
+    }
+  \item{\textbf{Transformed Single Features}: The remaining features are single
+    raw features which are scaled based on an assumed distribution.  The
+    male\_rank\_transform feature, for example, scales the male rank based on an
+    exponential distribution.}
+\end{itemize}
+
+In addition to the different categories, some of the features, such as
+(untransformed) rank, are ordinal, while others, such as estimated genetic
+distance are real-valued.
+
+\subsection{Identifiers and Labels}
+Each datapoint contains an identifier of the male and female pair in an
+interaction that could lead to a consortship and a 0/1 label which indicates
+whether the male and female consorted.
+
+\section{Preprocessing}
+
+In the analysis that we have conducted up to this point, we have not performed
+any preprocessing on the data. We may consider applying additional
+transformations to the features, such as whitening using PCA if we find that our
+models are negatively impacted by the colinearity between features.
+
 \section{Methods}
 \subsection{Materials}
-% used sklearn in python
+
+To perform our analysis, we used the \texttt{scikit-learn} python package. Methods
+that were not readily available in \texttt{scikit-learn}, such as feature selection, were
+implemented independently in python.
+
+
 \subsection{Classification}
+To examine if 
 % feature selection
 % algos and cross-validation
 \subsection{Clustering}
 % kmeans on non-consort pairs, examined centroids, used PCA to visualize
+
+We ran the k-means algorithm with 4 clusters on the consorting and
+non-consorting pairs. To visualize the clusters, we then used dimensionality
+reduction techniques such as PCA and t-SNE manifold tool.\\
+
+We also examined using affinity propagation which can automatically determine
+the number of clusters.
+
 \subsection{Graphical Approach}
 
 %------------------------------------------------
 
-\section{Results}
+\section{Results and Discussion}
 \subsection{Exploratory Data Analysis}
 % labels imbalanced
+Notably, we observe that the labels within the dataset are imbalanced -- there
+are approximately ten times as many pairs which did not consort than those who
+did. This imbalance may cause an issue in our classification algorithms since .
+To avoid this we use the \texttt{weight} for \texttt{scikit-learn}'s classifiers
+to automatically assign weights to the classes based on the incidence of labels.
 % PCA results
+Using PCA to map higher dimensional dataset to 2 dimensions does not reveal
+any lower-dimensional separation between the consorting/non-consorting pairs.
+This indicates that the classification problem may be inherently
+high-dimensional. The tSNE manifold mapping indicates this as well.
 \subsection{Classification}
 % confusion matrix
 \subsection{Clustering}
 % kmeans graphic
+
+Based on the centroids of the non-consorting clusters, non-consorting pairs can
+be divided into:
+\begin{itemize}
+\end{itemize}
+Additionally, the centroids of the consorting clusters indicate that consorting
+pairs can be clustered into:
+\begin{itemize}
+\end{itemize}
+
+Our initial experimentation with affinity propagation led the number of
+automatically determined clusters resulted in over 64 clusters, which is too
+high for us to interpret reasonably.
+
 \subsection{Graphical Approach}
 
 %------------------------------------------------
 
-\section{Discussion}
-% Failure of PCA to separate indicates classification problem may be
-% high-dimensional
 \section{Next Steps}
-% Automatic determination of number of clusters
-% Automatic determination of number of clusters
+Additionally, we plan to continue investigating clustering methods. Since we
+cannot easily pick out clusters from lower dimensional representations of the
+data, we are especially interested in exploring methods that can automatically
+determine the number of clusters within our data, without creating an excessive
+number of clusters.
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
