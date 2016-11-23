@@ -198,7 +198,10 @@ the number of clusters.
 \subsection{Graphical Approach}
 
 %------------------------------------------------
-
+One approach to this problem is to use the interactions as edges and the baboons as nodes. Due to only heterosexual interactions occurring this means that the resulting graph is bipartite. The classification then becomes  an edge prediction task. Most previous work on this has been on just predicting whether or not edges exist, not predicting the label of the edge. We adapted current methods to predict the label of an edge rather than whether or not it exists. \\
+\cite{Macskassy:2007} use a simple method that computes the similarities of the attributes of nodes to determine the weight of latent edges between nodes. Because most of the attributes are not inherent to the baboons, but are depdendent on the scenario in which interactions occur we adapt this method to look at the similarity between the proposed edge and already existing edges between those two nodes. More formally, if there is some set of nodes $V$ and some set of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some associated label $l_i\in \{0,1\}$ then to determine the label of a new edge $e_n$ between nodes $u$ and $v$ we would compute 
+$$argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E}1\{l_i=label\}}$$
+We implemented this method, and also at a more specific method where instead of looking at all edges, we only look at edges where $u$ or $v$ are one of the endpoints of the edge. Both of these models end up being very similar to locally weighted regression so we compare that also. 
 \section{Results and Discussion}
 \subsection{Exploratory Data Analysis}
 \begin{figure}
@@ -302,6 +305,12 @@ number of clusters.
 \newblock 
   Genetic Effects on Mating Success and Partner Choice in a Social Mammal.
 \newblock {\em The American Naturalist}, 2012 180:1, 113--129.
+
+\bibitem [Macskassy,2007]{Macskassy:2007} 
+Sofus A. Macskassy (2007) 
+\newblock
+Improving learning in networked data by combining explicit and mined links
+\newblock{\em Proceedings of the 22nd national conference on Artificial intelligence}, July 22-26, 2007, p.590-595
  
 \end{thebibliography}
 

@@ -14,6 +14,14 @@ class Graph:
             print "ATTRS:",attrs
             print "ID_TO_GENDER:",id_to_gender
             exit(1)
+        failed=0
+        total=0
+        for node in self.edge_class:
+            for event in self.edge_class[node]:        
+                total+=1
+                if event==0:
+                    failed+=1
+        self.prior=float(failed)/total
 
     def init_from_dicts(self,edge_class,attrs,id_to_gender):
         self.edge_class=edge_class
@@ -60,10 +68,10 @@ class Graph:
             if line[1] not in self.edge_list[line[0]]:
                 self.edge_list[line[0]].append(line[1])
                 self.edge_list[line[1]].append(line[0])
-            self.edge_class[(line[0],line[1])].append(int(line[3])+int(line[4]))#consort=1, conceive=2, nothing=0
-            self.edge_class[(line[1],line[0])].append(int(line[3])+int(line[4]))
-            self.attrs[(line[1],line[0])].append(map(float,np.array(line[5:])))
-            self.attrs[(line[0],line[1])].append(map(float,np.array(line[5:])))
+            self.edge_class[(line[0],line[1])].append(int(line[3]))#consort=1, nothing=0
+            self.edge_class[(line[1],line[0])].append(int(line[3]))
+            self.attrs[(line[1],line[0])].append(map(float,np.array(line[4:])))
+            self.attrs[(line[0],line[1])].append(map(float,np.array(line[4:])))
             self.attr_length=len(self.attrs[(line[1],line[0])][-1])
     """Returns a list of K graph objects, and a list of K test attrs, and labels, however, every node is left with still at least one known edge between every node, e.g. if there are at 5 edges between node A and node B, then the training graph will still have at least 1 edge between node A and node B"""
     def create_k_subgraphs(self,k=4):
@@ -116,6 +124,36 @@ class Graph:
                 i+=1
         return (attrs,labels)
 
+    def get_attrs_and_labels_specific(self):
+        #Returns a 2 tuple of all (attrs,labels) both are numpy arrays, does not take advantage of the graph structure at all
+        attrs={}
+        labels={}
+        i=0
+        for node1,node2 in self.edge_class:
+            if node1<=node2:#So no duplicates
+                continue
+            if (node1,node2) not in attrs:
+                attrs[(node1,node2)]=np.zeros((0,self.attr_length))
+                labels[(node1,node2)]=np.zeros((0))
+            assert len(self.edge_class[(node1,node2)])==len(self.attrs[(node1,node2)]),'MISMATCH ON ATTRS AND LABELS SIZE'
+            for j in range(len(self.edge_class[(node1,node2)])):
+                attrs[(node1,node2)]=np.append(attrs[(node1,node2)],self.attrs[(node1,node2)][j])
+                labels[(node1,node2)]=np.append(labels[(node1,node2)],self.edge_class[(node1,node2)][j])
+            attrs[(node1,node2)]=np.reshape(attrs[(node1,node2)],(len(self.edge_class[(node1,node2)]),self.attr_length))
+        return (attrs,labels)
+
+    
+    def get_neighs(self, node):
+        attrs=[]
+        labels=[]
+        for neigh in self.id_to_gender:
+            if (node,neigh) in self.attrs:
+                for attr,label in zip(np.array(self.attrs[(node,neigh)]),self.edge_class[(node,neigh)]):
+                    attrs.append(attr)
+                    labels.append(label)
+                    
+        return zip(attrs,labels)
+        
     def print_stats(self):
         print "Num Nodes:",len(self.edge_list)
         print "Num Edges:",sum([len(self.edge_class[node]) for node in self.edge_class])/2
@@ -136,10 +174,10 @@ class Graph:
         print "Num Failed:",failed/2
         print "Num Consorts:",consort/2
         print "Num Conceptions:",conceive/2
-            
+    
 
 if __name__=='__main__':
-    g=Graph(filename='baboon_data.csv')
+    g=Graph(filename='../../data/rawdata.csv')
     g.print_stats()
     print ""
 #    g.id_to_gender={"abc":"Male","def":"Female"}
@@ -147,8 +185,5 @@ if __name__=='__main__':
 #    g.edge_class={('abc','def'):[0,2,1,2,1,2],('def','abc'):[0,2,1,2,1,2]}
 #    g.attrs={('abc','def'):[('atts0','attsother0'),('atts1','attsother1'),('atts2','attsother2'),('atts3','attsother3'),('atts4','attsother4'),('atts5','attsother5')],('def','abc'):[('atts0','attsother0'),('atts1','attsother1'),('atts2','attsother2'),('atts3','attsother3'),('atts4','attsother4'),('atts5','attsother5')]}
     (train_graphs,test_classes,test_attrs)=g.create_k_subgraphs()
-    for graph in train_graphs:
-        graph.print_stats()
-        print ""
-
+    g.get_attrs_and_labels_specific()
                         
