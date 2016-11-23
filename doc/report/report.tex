@@ -201,7 +201,23 @@ the number of clusters.
 
 \section{Results and Discussion}
 \subsection{Exploratory Data Analysis}
-% labels imbalanced
+\begin{figure}
+      \centering
+          \includegraphics[width=0.5\textwidth]{../figs/all_feats_histogram.png}
+  \caption{Distribution of features}
+  \label{fig:figure_distrib}
+\end{figure}
+The features within the dataset seem to have varying distributions, as shown in
+Figure \ref{fig:figure_distrib}. While some features, such as the number of
+males present, seem to have a balanced distribution, others, such as the ages
+and ranks, show a heavy skew with long tails.
+
+\begin{figure}[h]
+      \centering
+          \includegraphics[width=0.5\textwidth]{../figs/consort_distrib.png}
+  \caption{Distribution of consort/non-consort labels}
+  \label{fig:label_distrib}
+\end{figure}
 Notably, we observe that the labels within the dataset are imbalanced -- there
 are approximately ten times as many pairs which did not consort than those who
 did. This imbalance may cause an issue in our classification algorithms since .
