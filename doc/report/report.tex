@@ -27,6 +27,7 @@
 \usepackage[sc]{mathpazo} % Use the Palatino font
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 \linespread{1.05} % Line spacing - Palatino needs more space between lines
+\setlength\parindent{0pt}
 \usepackage[protrusion=true,expansion=true]{microtype} % Slightly tweak font spacing for aesthetics
 
 \usepackage[english]{babel} % Language hyphenation and typographical rules
@@ -60,6 +61,8 @@
 \usepackage{titling} % Customizing the title section
 
 \usepackage{hyperref} % For hyperlinks in the PDF
+\usepackage{graphicx} % Including graphics
+\usepackage{subcaption} % Including subfigures
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -134,14 +137,14 @@ There are several categories of features present within the dataset.
   \item{\textbf{Observed behavioral features}: These include rank of the mating pair
     within the social heirarchy of the group and how many males and females from
     their group were present when the interaction of the pair took place.}
-  \item{\textbf{Transformed Pairwise Features}: Some features are
+  \item{\textbf{Derived Pairwise Features}: Some features are
     transformations applied to the observed features described above, which were
     computed by \cite{Tung:2012}. Some of the transformations compute a pairwise
     score based on a combination of the male and female attributes. For example,
     the rank\_interact feature represents the combination of male and female
     ranks.
     }
-  \item{\textbf{Transformed Single Features}: The remaining features are single
+  \item{\textbf{Derived Single Features}: The remaining features are single
     raw features which are scaled based on an assumed distribution.  The
     male\_rank\_transform feature, for example, scales the male rank based on an
     exponential distribution.}
@@ -198,6 +201,12 @@ did. This imbalance may cause an issue in our classification algorithms since .
 To avoid this we use the \texttt{weight} for \texttt{scikit-learn}'s classifiers
 to automatically assign weights to the classes based on the incidence of labels.
 % PCA results
+\begin{figure}
+      \centering
+          \includegraphics[width=0.5\textwidth]{../figs/consort_non_consort_visualization_pca.png}
+  \caption{Reduced-dimensionality PCA visualization of consorting (red) and
+  non-consorting pairs (green)}
+\end{figure}
 Using PCA to map higher dimensional dataset to 2 dimensions does not reveal
 any lower-dimensional separation between the consorting/non-consorting pairs.
 This indicates that the classification problem may be inherently
@@ -206,14 +215,29 @@ high-dimensional. The tSNE manifold mapping indicates this as well.
 % confusion matrix
 \subsection{Clustering}
 % kmeans graphic
-
+\begin{figure}
+\caption{t-SNE visualization of K-Means with 4 clusters applied on consorting
+  and non-consorting pairs.}
+  \begin{subfigure}{0.5\textwidth}
+      \centering
+          \includegraphics[width=\textwidth]{../figs/non_consort_kmeans_2d_tsne.png}
+  \caption{Non-consorting pairs}
+\end{subfigure}
+  \begin{subfigure}{0.5\textwidth}
+      \centering
+          \includegraphics[width=\textwidth]{../figs/consort_kmeans_2d_tsne.png}
+  \caption{Consorting pairs}
+\end{subfigure}
+\end{figure}
 Based on the centroids of the non-consorting clusters, non-consorting pairs can
 be divided into:
 \begin{itemize}
+  \item{TODO: describe clusters}
 \end{itemize}
 Additionally, the centroids of the consorting clusters indicate that consorting
 pairs can be clustered into:
 \begin{itemize}
+  \item{TODO: describe clusters}
 \end{itemize}
 
 Our initial experimentation with affinity propagation led the number of
@@ -225,6 +249,12 @@ high for us to interpret reasonably.
 %------------------------------------------------
 
 \section{Next Steps}
+
+The analysis that we have performed until now used the features directly from
+the original dataset. We plan to examine if appyling additional preprocessing to
+the data, such as normalizing ages or applying whitening to the derived features
+can improve our algorithms.\\
+
 Additionally, we plan to continue investigating clustering methods. Since we
 cannot easily pick out clusters from lower dimensional representations of the
 data, we are especially interested in exploring methods that can automatically
