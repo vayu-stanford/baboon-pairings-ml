@@ -182,9 +182,9 @@ whether the male and female consorted.
 % implemented independently in python.
 
 \subsection{Classification}
-We perform a K-fold validation over several linear and non-linear classifiers,
-each embedded in a forward and backward feature selection algorithm
-framework.\\
+To examine if we can predict consortship, we perform a K-fold validation over
+several linear and non-linear classifiers, each embedded in a forward and
+backward feature selection algorithm framework.\\
 
 The linear classifiers examined are logistic regression and linear SVM, while
 the non-linear classifiers are gaussian and polynomial SVM. For each algorithm,
@@ -333,8 +333,6 @@ perform well.\\
   % non-consorting pairs.}
   % \label{fig:non_consort_clustering_vis}
 % \end{figure}
-Based on the centroids of the non-consorting clusters, non-consorting pairs can
-be divided into: {TODO: describe clusters}
 \begin{figure}[h]
       \centering
           \includegraphics[width=0.5\textwidth]{../figs/consort_kmeans_2d_tsne.png}
@@ -342,8 +340,6 @@ be divided into: {TODO: describe clusters}
   pairs.}
   \label{fig:consort_clustering_vis}
 \end{figure}
-Additionally, the centroids of the consorting clusters indicate that consorting
-pairs can be clustered into: {TODO: describe clusters}
 
 The lower-dimensional visualization of consorting clusters  (Figure
 \ref{fig:consort_clustering_vis}) shows cleaner separation for the consorting
@@ -381,19 +377,20 @@ investigation is necessary to fully understand  the reason why such algorithms
 have performed poorly and why they may or may not be adequate for this
 particular data. \\
 
-Additionally, we plan to continue investigating clustering methods. We are
-especially interested in exploring methods that can automatically determine the
-number of clusters within our data, without creating an excessive number of
-clusters. One potential approach may be to use silhouette scores to assign
-costs for a number of clusters.\\
+Additionally, we plan to characterize clusters based on examining the cluster
+centroids. Also, we plan to continue investigating clustering methods,
+especially those that can automatically determine the number of clusters within
+our data, without creating an excessive number of clusters. One potential
+approach may be to use silhouette scores to assign costs for a number of
+clusters.\\
 
 For graphical analysis we will look at models that ignore many of the edge
 attributes and instead focus on what sort of information can be gained purely
 from the graph structure. Specifically we would like to adapt status and
 balance theory to work on bipartite graphs. While these models are unlikely to
 be good classifiers in and of themselves, they will utilize features that other
-models such as SVMs cannot see. So ensembles with SVMs and graph models are
-likely to provide better performance than only SVMs.
+models such as SVMs cannot process. We expect ensemble methods with SVMs and
+graph models to provide better performance than using either in isolation.
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
