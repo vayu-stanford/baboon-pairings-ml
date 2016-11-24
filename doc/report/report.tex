@@ -19,7 +19,7 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[twoside,twocolumn,paper=letter]{article}
+\documentclass[twoside,twocolumn,paper=letter,fontsize=11pt]{article}
 \usepackage[cm]{fullpage} 
 
 \usepackage{blindtext} % Package to generate dummy text throughout this template 
@@ -37,6 +37,7 @@
 \usepackage{booktabs} % Horizontal rules in tables
 
 \usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{multirow}
 
 \usepackage{enumitem} % Customized lists
 \setlist[itemize]{noitemsep} % Make itemize lists more compact
@@ -93,31 +94,30 @@
 
 % Print the title
 \maketitle
-
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
 \section{Introduction}
 
-\lettrine[nindent=0em,lines=3]{T} he mating behavior of a species drives genetic
-interchange and is a major driver of evolution within populations. Factors that
-contribute to consortship may range from genetic causes, such as physical traits
-expressed due to the presence of a gene, to those that are social or behavioral.
-The contribution of social factors is of particular interest for animals that
-live in structured groups, where factors such as rank within a social heirarchy
-may impact mating success.  Investigating this topic will provide deeper insight
-into the factors of mating success in social mammals, which may be extended to
-apply to humans as well.\\
+% \lettrine[nindent=0em,lines=3]{T} he mating behavior of a species drives genetic
+% interchange and is a major driver of evolution within populations. Factors that
+% contribute to consortship may range from genetic causes, such as physical traits
+% expressed due to the presence of a gene, to those that are social or behavioral.
+% The contribution of social factors is of particular interest for animals that
+% live in structured groups, where factors such as rank within a social heirarchy
+% may impact mating success.  Investigating this topic will provide deeper insight
+% into the factors of mating success in social mammals, which may be extended to
+% apply to humans as well.\\
 
-We apply machine learning methods to investigate the behavioral and genetic
-reasons for success and failure of mating between wild baboon pairs. Our
-analysis applies machine learning methods to examine whether successful
-consortships can be predicted, and whether certain behavioral or genetic
-features are especially relevant in determining consortship. Additionally, we
-investigate whether successful and unsuccessful pairs can be clustered, and
-whether there are certain clusters present in one group that are not present in
-the other.
+\lettrine[nindent=0em,lines=3]{W}e apply machine learning methods to
+investigate the behavioral and genetic reasons for success and failure of
+mating between wild baboon pairs. Our analysis applies machine learning methods
+to examine whether successful consortships can be predicted, and whether
+certain behavioral or genetic features are especially relevant in determining
+consortship. Additionally, we investigate whether successful and unsuccessful
+pairs can be clustered, and whether there are certain clusters present in one
+group that are not present in the other.
 
 %------------------------------------------------
 
@@ -167,20 +167,19 @@ Each datapoint contains an identifier of the male and female pair in an
 interaction that could lead to a consortship and a 0/1 label which indicates
 whether the male and female consorted.
 
-\section{Preprocessing}
+% \section{Preprocessing}
 
-In the analysis that we have conducted up to this point, we have not performed
-any preprocessing on the data. We may consider applying additional
-transformations to the features, such as whitening using PCA if we find that our
-models are negatively impacted by the colinearity between features.
+% In the analysis that we have conducted up to this point, we have not performed
+% any preprocessing on the data. We may consider applying additional
+% transformations to the features, such as whitening using PCA if we find that our
+% models are negatively impacted by the colinearity between features.
 
 \section{Methods}
-\subsection{Materials}
+% \subsection{Materials}
 
-To perform our analysis, we used the \texttt{scikit-learn} python package. Methods
-that were not readily available in \texttt{scikit-learn}, such as feature selection, were
-implemented independently in python.
-
+% To perform our analysis, we used the \texttt{scikit-learn} python package. Methods
+% that were not readily available in \texttt{scikit-learn}, such as feature selection, were
+% implemented independently in python.
 
 \subsection{Classification}
 % feature selection
@@ -194,10 +193,9 @@ The linear classifiers examined are logistic regression and linear SVM, while th
 
 We ran the k-means algorithm with 4 clusters on the consorting and
 non-consorting pairs. To visualize the clusters, we then used dimensionality
-reduction techniques such as PCA and t-SNE manifold tool.\\
-
-We also examined using affinity propagation which can automatically determine
-the number of clusters.
+reduction techniques such as PCA and t-SNE manifold tool. We also examined
+using affinity propagation which can automatically determine the number of
+clusters.
 
 \subsection{Graphical Approach}
 
@@ -209,23 +207,23 @@ We implemented this method, and also at a more specific method where instead of 
 
 \section{Results and Discussion}
 \subsection{Exploratory Data Analysis}
-\begin{figure}
-      \centering
-          \includegraphics[width=0.5\textwidth]{../figs/all_feats_histogram.png}
-  \caption{Distribution of features}
-  \label{fig:figure_distrib}
-\end{figure}
-The features within the dataset seem to have varying distributions, as shown in
-Figure \ref{fig:figure_distrib}. While some features, such as the number of
-males present, seem to have a balanced distribution, others, such as the ages
-and ranks, show a heavy skew with long tails.
+%\begin{figure}
+      %\centering
+          %\includegraphics[width=0.5\textwidth]{../figs/all_feats_histogram.png}
+  %\caption{Distribution of features}
+  %\label{fig:figure_distrib}
+%\end{figure}
+The features within the dataset seem to have varying distributions. While some
+features, such as the number of males present, seem to have a balanced
+distribution, others, such as the ages and ranks, show a heavy skew with long
+tails.
 
-\begin{figure}[h]
-      \centering
-          \includegraphics[width=0.5\textwidth]{../figs/consort_distrib.png}
-  \caption{Distribution of consort/non-consort labels}
-  \label{fig:label_distrib}
-\end{figure}
+%\begin{figure}[h]
+      %\centering
+          %\includegraphics[width=0.5\textwidth]{../figs/consort_distrib.png}
+  %\caption{Distribution of consort/non-consort labels}
+  %\label{fig:label_distrib}
+%\end{figure}
 Notably, we observe that the labels within the dataset are imbalanced -- there
 are approximately ten times as many pairs which did not consort than those who
 did. This imbalance may cause an issue in our classification algorithms since .
@@ -249,60 +247,70 @@ high-dimensional. The tSNE manifold mapping indicates this as well.
 % confusion matrix
 
 Running forward and backward feature selection shows that, for all the classifiers considered, the best performance in terms of the designated metrics is achieved when all the 16 derived and non-derived features are present. Moreover when breaking down the performance of each classifier, the top pick is gaussian SVM, followed by linear SVM. The metrics for the former algorithm are presented in the following table, along with the confusion matrices for the winner and the runner up. It is interesting to see how even though the gaussian SVM overall performs better in the metrics, linear SVM has a far higher rate of correct prediction on the positive labels. While the average errors with gaussian SVM are relatively high, the Fischer scores clearly showcase a poor weighed average of precision and recall, indicating this algorithm does not perform well.\\
+\begin{table}[h]
+  \centering
+  \begin{tabular}{| l |l |c |c|}
+    \hline
+    & & \multicolumn{2}{ |c| }{Predicted} \\
+    \hline
+    & & Non-Consort & Consort \\
+    \hline
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.827 & 0.173  \\
+                                                                     & Consort & 0.632 & 0.376 \\
+    \hline
+  \end{tabular}
+  \caption{Gaussian SVM normalized confusion matrix in 75-25 cross-validation.}
+  \label{tbl:cm_rbf_vis}
+\end{table}
+\begin{table}
+  \centering
+  \begin{tabular}{| l |l |c |c|}
+    \hline
+    & & \multicolumn{2}{ |c| }{Predicted} \\
+    \hline
+    & & Non-Consort & Consort \\
+    \hline
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.537 & 0.463  \\
+                                                                     & Consort & 0.277 & 0.723 \\
+    \hline
+  \end{tabular}
+  \caption{Linear SVM confusion matrix in 75-25 cross-validation.}
+  \label{tbl:cm_lin_vis}
+\end{table}
 \begin{figure}
       \centering
           \includegraphics[width=0.5\textwidth]{../figs/ClassificationMetrics_RbfSVM.png}
   \caption{Gaussian SVM metrics based on number of features in forward feature selection.}
   \label{fig:rbf_svm_vis}
 \end{figure}
-\begin{figure}
-      \centering
-          \includegraphics[width=0.5\textwidth]{../figs/gaussianSVM_CM.png}
-  \caption{Gaussian SVM confusion matrix in 75-25 cross-validation.}
-  \label{fig:cm_rbf_vis}
-\end{figure}
-\begin{figure}
-      \centering
-          \includegraphics[width=0.5\textwidth]{../figs/linearSVM_CM.png}
-  \caption{Linear SVM confusion matrix in 75-25 cross-validation.}
-  \label{fig:cm_lin_vis}
-\end{figure}
 
 
 \subsection{Clustering}
 % kmeans graphic
-\begin{figure}[h]
-      \centering
-          \includegraphics[width=0.5\textwidth]{../figs/non_consort_kmeans_2d_tsne.png}
-  \caption{t-SNE visualization of K-Means with 4 clusters applied on consorting
-  and non-consorting pairs.}
-  \label{fig:non_consort_clustering_vis}
-\end{figure}
+% \begin{figure}[h]
+      % \centering
+          % \includegraphics[width=0.5\textwidth]{../figs/non_consort_kmeans_2d_tsne.png}
+  % \caption{t-SNE visualization of K-Means with 4 clusters applied on
+  % non-consorting pairs.}
+  % \label{fig:non_consort_clustering_vis}
+% \end{figure}
 Based on the centroids of the non-consorting clusters, non-consorting pairs can
-be divided into:
-\begin{itemize}
-  \item{TODO: describe clusters}
-\end{itemize}
+be divided into: {TODO: describe clusters}
 \begin{figure}[h]
       \centering
           \includegraphics[width=0.5\textwidth]{../figs/consort_kmeans_2d_tsne.png}
   \caption{t-SNE visualization of K-Means with 4 clusters applied on consorting
-  and consorting pairs.}
+  pairs.}
   \label{fig:consort_clustering_vis}
 \end{figure}
 Additionally, the centroids of the consorting clusters indicate that consorting
-pairs can be clustered into:
-\begin{itemize}
-  \item{TODO: describe clusters}
-\end{itemize}
+pairs can be clustered into: {TODO: describe clusters}
 
 The lower-dimensional visualization of these clusters shows cleaner separation
 for the consorting pairs (Figure \ref{fig:consort_clustering_vis}) than for the
-non-consorting pairs (Figure \ref{fig:non_consort_clustering_vis}).
-
-Our initial experimentation with affinity propagation led the number of
-automatically determined clusters resulted in over 64 clusters, which is too
-high for us to interpret reasonably.
+non-consorting pairs.  Our initial experimentation with affinity propagation
+led the number of automatically determined clusters resulted in over 64
+clusters, which is too high for us to interpret reasonably.
 
 \subsection{Graphical Approach}
 
@@ -337,7 +345,7 @@ For graphical analysis we will look at models that ignore many of the edge attri
   Genetic Effects on Mating Success and Partner Choice in a Social Mammal.
 \newblock {\em The American Naturalist}, 2012 180:1, 113--129.
 
-\bibitem [Macskassy,2007]{Macskassy:2007} 
+\bibitem [Macskassy, 2007]{Macskassy:2007} 
 Sofus A. Macskassy (2007) 
 \newblock
 Improving learning in networked data by combining explicit and mined links
