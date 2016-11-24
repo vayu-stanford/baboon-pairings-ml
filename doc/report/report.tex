@@ -185,6 +185,10 @@ implemented independently in python.
 \subsection{Classification}
 % feature selection
 % algos and cross-validation
+One of the very first things we thought critical in understanding the data was running a range of classifiers and visualizing which ones would perform best according to a set of metrics. However, classification on the training set alone does not yield a significant portrait of the data, hence we opted to perform K-fold validation 
+on linear and non-linear classifiers, each embedded in a forward and backward feature selection algorithm framework.\\
+
+The linear classifiers examined are logistic regression and linear SVM, while the non-linear classifiers are gaussian and polynomial SVM. For each algorithm, we tuned the hyper-parameters (i.e. the regularization) and we ensured that the class weights were balanced, given that the negative (non-consort) labels outweigh the positive labels (consort) by 5-to-1. When performing K-fold validation with 4 folds, the data was randomly shuffled so as to avoid positive labels concentrating in a particular training or test set, biasing the performance. Moreover, for each algorithm and feature subset we evaluated the error, precision, recall and F1 score as an average on each of the K-cluster training and test sets. Finally we stored the confusion matrix, obtained by running 75-25 hold-out cross-validation with all the features and for the models that performed best.
 \subsection{Clustering}
 % kmeans on non-consort pairs, examined centroids, used PCA to visualize
 
@@ -243,6 +247,28 @@ This indicates that the classification problem may be inherently
 high-dimensional. The tSNE manifold mapping indicates this as well.
 \subsection{Classification}
 % confusion matrix
+
+Running forward and backward feature selection shows that, for all the classifiers considered, the best performance in terms of the designated metrics is achieved when all the 16 derived and non-derived features are present. Moreover when breaking down the performance of each classifier, the top pick is gaussian SVM, followed by linear SVM. The metrics for the former algorithm are presented in the following table, along with the confusion matrices for the winner and the runner up. It is interesting to see how even though the gaussian SVM overall performs better in the metrics, linear SVM has a far higher rate of correct prediction on the positive labels. While the average errors with gaussian SVM are relatively high, the Fischer scores clearly showcase a poor weighed average of precision and recall, indicating this algorithm does not perform well.\\
+\begin{figure}
+      \centering
+          \includegraphics[width=0.5\textwidth]{../figs/ClassificationMetrics_RbfSVM.png}
+  \caption{Gaussian SVM metrics based on number of features in forward feature selection.}
+  \label{fig:rbf_svm_vis}
+\end{figure}
+\begin{figure}
+      \centering
+          \includegraphics[width=0.5\textwidth]{../figs/gaussianSVM_CM.png}
+  \caption{Gaussian SVM confusion matrix in 75-25 cross-validation.}
+  \label{fig:cm_rbf_vis}
+\end{figure}
+\begin{figure}
+      \centering
+          \includegraphics[width=0.5\textwidth]{../figs/linearSVM_CM.png}
+  \caption{Linear SVM confusion matrix in 75-25 cross-validation.}
+  \label{fig:cm_lin_vis}
+\end{figure}
+
+
 \subsection{Clustering}
 % kmeans graphic
 \begin{figure}[h]
@@ -288,6 +314,8 @@ The analysis that we have performed until now used the features directly from
 the original dataset. We plan to examine if appyling additional preprocessing to
 the data, such as normalizing ages or applying whitening to the derived features
 can improve our algorithms.\\
+
+The results obtained through a first pass of linear and non-linear classifiers do not measure well in terms of the defined metrics, leaving a large margin of improvement in terms of the chosen algorithms and features. Moreover, further investigation is necessary to fully understand  the reason why such algorithms have performed poorly and why they may or may not be adequate for this particular data. \\
 
 Additionally, we plan to continue investigating clustering methods. Since we
 cannot easily pick out clusters from lower dimensional representations of the
