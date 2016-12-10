@@ -8,8 +8,8 @@ from Graph import *
 #am not using hubs, because hubs and authorities are essentially the same in the undirected setting. 
 #So I am just updating authorities, using authorities. Also, I am only utilizing edges where consorting appears.
 #So failed attempts do not influence the HITS score for a node.
-def HITS(features):
-    edge_list,edge_class=construct_edges(features)
+def HITS(ids,attrs,labels):
+    edge_list,edge_class=construct_edges(ids,labels)
     authorities={}
     for node in edge_list:
         authorities[node]=1.0
@@ -22,7 +22,7 @@ def HITS(features):
         for node in edge_list:
             new_authorities[node]/=(total_auth**.5)
         authorities=new_authorities
-    return authorities
+    return add_attrs(attrs,ids,authorities)
 
 #Regular pagerank, beta is 1 minus the teleport probability, so set it to 1 to never teleport
 #features is a list of 2-tuples where the first element is a 2-tuple of the gorilla's ids, and the second element is a 1 or 0
@@ -61,11 +61,15 @@ def PageRank(ids,attrs,labels,beta=.9):
     ranks={}
     for node in indices:
         ranks[node]=principle_vector[indices[node]]
-    new_attrs=np.zeros(attrs.shape[0],2)
+    return add_attrs(attrs,ids,ranks)
+
+def add_attrs(attrs, ids,ranks):
+    new_attrs=np.zeros((attrs.shape[0],2))
     for i in range(attrs.shape[0]):
         new_attrs[i,:]=np.array([ranks[ids[i][0]],ranks[ids[i][1]]])
-    return np.hcat(attrs,new_attrs)
-    
+    print new_attrs.shape
+    print attrs.shape
+    return np.concatenate((attrs,new_attrs),axis=1)
 
 def construct_edges(ids, labels):
     features=[]
@@ -96,22 +100,19 @@ if __name__=='__main__':
     g=open('../../data/rawdata.csv')
     ids=[]
     labels=np.array([])
-    attrs=np.array([])
+    attrs=np.zeros((12141,16))
     first=True
+    i=0
     for line in g:
         if first:
             first=False
             continue
         ids.append(line.strip().split(',')[:2])
         labels=np.append(labels,int(line.strip().split(',')[3]))
-        attrs=np.append(attrs,np.array(line.strip().split(',')[4:]))
-    page_rank=PageRank(ids,labels,attrs)
-
-    ranks=[]
-    for node in page_rank:
-        ranks.append((page_rank[node],node))
-    ranks.sort()
-    for i in range(len(ranks)):
-        print ranks[i],i
-
+        attrs[i,:]=np.array(line.strip().split(',')[4:])
+        i+=1
+    print attrs.shape
+    page_rank=HITS(ids,attrs,labels)
+    print page_rank.shape
+    print page_rank[0,:]
 
