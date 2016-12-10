@@ -8,7 +8,7 @@ from Graph import *
 #am not using hubs, because hubs and authorities are essentially the same in the undirected setting. 
 #So I am just updating authorities, using authorities. Also, I am only utilizing edges where consorting appears.
 #So failed attempts do not influence the HITS score for a node.
-def HITS(ids,attrs,labels):
+def HITS(ids,attrs,labels,test_ids,test_attrs):
     edge_list,edge_class=construct_edges(ids,labels)
     authorities={}
     for node in edge_list:
@@ -23,7 +23,7 @@ def HITS(ids,attrs,labels):
             new_authorities[node]/=(total_auth**.5)
         authorities=new_authorities
     train_attrs=add_attrs(attrs,ids,authorities)
-    test_attrs=add_attrs(test_atts,test_ids,authorities)
+    test_attrs=add_attrs(test_attrs,test_ids,authorities)
     return (train_attrs,test_attrs)
 
 #Regular pagerank, beta is 1 minus the teleport probability, so set it to 1 to never teleport
@@ -64,7 +64,7 @@ def PageRank(ids,attrs,labels,test_ids,test_attrs,beta=.9):
     for node in indices:
         ranks[node]=principle_vector[indices[node]]
     train_attrs=add_attrs(attrs,ids,ranks)
-    test_attrs=add_attrs(test_atts,test_ids,ranks)
+    test_attrs=add_attrs(test_attrs,test_ids,ranks)
     return (train_attrs,test_attrs)
 
 def add_attrs(attrs, ids,ranks):
@@ -116,7 +116,7 @@ if __name__=='__main__':
         attrs[i,:]=np.array(line.strip().split(',')[4:])
         i+=1
     print attrs.shape
-    page_rank=HITS(ids,attrs,labels)
-    print page_rank.shape
-    print page_rank[0,:]
+    page_rank=PageRank(ids,attrs,labels,ids,attrs)
+    print page_rank[0].shape
+    print page_rank[0][0,:]
 
