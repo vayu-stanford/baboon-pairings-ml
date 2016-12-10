@@ -1,14 +1,32 @@
 import numpy as np
 import extract
+from sklearn import decomposition
+from sklearn.preprocessing import scale
+from scipy.spatial.distance import pdist, squareform
 
+# This WILL modify features beyond recognition
 def whiten(attrs):
-    pass
+    attrs = scale(attrs)
+    pca = decomposition.PCA(n_components=attrs.shape[1], whiten = True)
+    pca.fit(attrs)
+    attrs = pca.transform(attrs)
+    return attrs
 
-def scale(attrs, scale=True):
-    pass
+def stdize(attrs, attr_idxs = None):
+    return scale(attrs) # just standardize for now
 
 def remove_similar_points(attrs, labels, similarity_measure = 0.01):
-    pass
+    dist_vec = pdist(attrs,'euclidean')
+    dist_mtx = squareform(dist_vec)
+    removal_set = set()
+    for (idx_1, label ) in enumerate(labels):
+        for idx_2 in range(idx_1):
+            if(label != labels[idx_2] and dist_mtx[idx_1, idx_2] < similarity_measure):
+                removal_set.add(idx_1)
+                removal_set.add(idx_2)
+    attrs = np.delete(attrs,list(removal_set),0)
+    labels = np.delete(labels,list(removal_set),0)
+    return(attrs,labels)
 
 def augment(attrs, labels, augment_label = '1', attr_idxs = None, mult=2, noise_mean=1.0, noise_stdev=0.001):
     if mult < 1:
@@ -34,11 +52,19 @@ def augment(attrs, labels, augment_label = '1', attr_idxs = None, mult=2, noise_
     labels = np.concatenate((labels,new_labels),axis=0)
     return(attrs,labels)
 
+def preprocess_data(attrs, labels, augment_attr_idxs = None, whiten=False):
+    if(augment_attr_idxs == None):
+        augment_attr_idxs=range(1,attrs.shape[1]) # don't add noise to conceptive
+    attrs = stdize(attrs);
+    (attrs, labels) = remove_similar_points(attrs,labels, similarity_measure=0.03)
+    if(whiten):
+        attrs = whiten(attrs);
+    (attrs, labels) = augment(attrs,labels, attr_idxs=augment_attr_idxs,  mult=4) 
+
 def main():
     include_transformed = True
     (attrs,labels) = extract.generate_labelled_data(include_transformed=include_transformed)
-    print(attrs.shape)
-    (attrs, labels) = augment(attrs,labels, mult=3)
+    preprocess_data(attrs, labels, None)
 
 if __name__=="__main__":
     main()
