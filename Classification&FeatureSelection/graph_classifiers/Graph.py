@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
+from numpy.linalg import eig
 import random
 random.seed(10)
 class Graph:
@@ -195,16 +196,74 @@ class Graph:
         print "Num Failed:",failed/2
         print "Num Consorts:",consort/2
         print "Num Conceptions:",conceive/2
-    
+        for k in self.attrs:
+            print "Num Attrs:",len(self.attrs[k][0])
+            break
+    #Returns a dictionary of the HITS score for each node.
+    #HITS is generally supposed to work in a directed graph, so to modify it to work in an undirected setting I
+    #am not using hubs, because hubs and authorities are essentially the same in the undirected setting. 
+    #So I am just updating authorities, using authorities. Also, I am only utilizing edges where consorting appears.
+    #So failed attempts do not influence the HITS score for a node.
+    def HITS(self):
+        authorities={}
+        for node in self.edge_list:
+            authorities[node]=1.0
+        for i in range(100):
+            total_auth=0.0
+            new_authorities={}
+            for node in self.edge_list:
+                new_authorities[node]=sum([authorities[neigh] for neigh in self.edge_list[node] if 1 in self.edge_class[(node,neigh)]])
+                total_auth+=authorities[node]
+            for node in self.edge_list:
+                new_authorities[node]/=(total_auth**.5)
+            authorities=new_authorities
+        return authorities
 
+    #Regular pagerank, beta is 1 minus the teleport probability, so set it to 1 to never teleport
+    #Note that like HITS we only utilize the successful edges, but unlike in HITS we utilize the number of successes. E.g.
+    #A successfully connecting with B twice means that it gets twice the amount of rank from B then if it did it once.
+    #Also, note that like HITS we are treating this as undirected.
+    def PageRank(self,beta=.9):
+        #Constructing weighted adjacency matrix
+        M=np.zeros((len(self.edge_list),len(self.edge_list)))
+        indices={}
+        counter=0
+        for node in self.edge_list:
+            if node not in indices:
+                indices[node]=counter
+                counter+=1
+            num_edges=0
+            for neigh in self.edge_list[node]:
+                num_edges+=self.edge_class[(node,neigh)].count(1)
+            for neigh in self.edge_list[node]:
+                if neigh not in indices:
+                    indices[neigh]=counter
+                    counter+=1
+                if num_edges>0:
+                    M[indices[node],indices[neigh]]=self.edge_class[(node,neigh)].count(1)/float(num_edges)
+        M=beta*M+(1-beta)/float(M.size)
+        values,vectors=eig(M.T)
+        largest_index=0
+        for i in range(len(values)):
+            if values[i]>values[largest_index]:
+                largest_index=i
+        principle_vector=vectors[:,largest_index]
+        principle_vector/=sum(principle_vector)
+        ranks={}
+        for node in indices:
+            ranks[node]=principle_vector[indices[node]]
+        return ranks
 if __name__=='__main__':
     g=Graph(filename='../../data/rawdata.csv')
     g.print_stats()
     print ""
-#    g.id_to_gender={"abc":"Male","def":"Female"}
-#    g.edge_list={"abc":["def"],"def":['abc']}
-#    g.edge_class={('abc','def'):[0,2,1,2,1,2],('def','abc'):[0,2,1,2,1,2]}
-#    g.attrs={('abc','def'):[('atts0','attsother0'),('atts1','attsother1'),('atts2','attsother2'),('atts3','attsother3'),('atts4','attsother4'),('atts5','attsother5')],('def','abc'):[('atts0','attsother0'),('atts1','attsother1'),('atts2','attsother2'),('atts3','attsother3'),('atts4','attsother4'),('atts5','attsother5')]}
     (train_graphs,test_classes,test_attrs)=g.create_k_subgraphs()
     g.get_attrs_and_labels_specific()
-                        
+    page_rank=g.HITS()
+    page_rank=g.PageRank(.9)
+    ranks=[]
+    for node in page_rank:
+        ranks.append((page_rank[node],node))
+    ranks.sort()
+    for i in range(len(ranks)):
+        print ranks[i],i
