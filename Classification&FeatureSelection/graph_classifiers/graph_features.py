@@ -22,16 +22,18 @@ def HITS(ids,attrs,labels):
         for node in edge_list:
             new_authorities[node]/=(total_auth**.5)
         authorities=new_authorities
-    return add_attrs(attrs,ids,authorities)
+    train_attrs=add_attrs(attrs,ids,authorities)
+    test_attrs=add_attrs(test_atts,test_ids,authorities)
+    return (train_attrs,test_attrs)
 
 #Regular pagerank, beta is 1 minus the teleport probability, so set it to 1 to never teleport
-#features is a list of 2-tuples where the first element is a 2-tuple of the gorilla's ids, and the second element is a 1 or 0
+#ids is a list of tuples where the first element is the first baboons id, second is the second baboons id
 #1 indicating consort, 0 indicating non-consort
 #Note that like HITS we only utilize the successful edges, but unlike in HITS we utilize the number of successes. E.g.
 #A successfully connecting with B twice means that it gets twice the amount of rank from B then if it did it once.
 #Also, note that like HITS we are treating this as undirected.
-#ids, attrs, labels
-def PageRank(ids,attrs,labels,beta=.9):
+#ids, attrs, labels 
+def PageRank(ids,attrs,labels,test_ids,test_attrs,beta=.9):
     edge_list,edge_class=construct_edges(ids,labels)
     #Constructing weighted adjacency matrix
     M=np.zeros((len(edge_list),len(edge_list)))
@@ -61,7 +63,9 @@ def PageRank(ids,attrs,labels,beta=.9):
     ranks={}
     for node in indices:
         ranks[node]=principle_vector[indices[node]]
-    return add_attrs(attrs,ids,ranks)
+    train_attrs=add_attrs(attrs,ids,ranks)
+    test_attrs=add_attrs(test_atts,test_ids,ranks)
+    return (train_attrs,test_attrs)
 
 def add_attrs(attrs, ids,ranks):
     new_attrs=np.zeros((attrs.shape[0],2))

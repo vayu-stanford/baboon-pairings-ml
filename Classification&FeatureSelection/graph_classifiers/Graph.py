@@ -2,8 +2,9 @@ import numpy as np
 from numpy.linalg import norm
 from numpy.linalg import eig
 import random
-random.seed(10)
+
 class Graph:
+    #Either initialize with filename, OR, with edge_class and id_to_gender. Edge class is 
     def __init__(self,filename=None,edge_class=None,attrs=None,id_to_gender=None):
         if filename!=None:
             self.init_from_file(filename)
@@ -225,6 +226,7 @@ class Graph:
     #Also, note that like HITS we are treating this as undirected.
     def PageRank(self,beta=.9):
         #Constructing weighted adjacency matrix
+        
         M=np.zeros((len(self.edge_list),len(self.edge_list)))
         indices={}
         counter=0
@@ -241,6 +243,8 @@ class Graph:
                     counter+=1
                 if num_edges>0:
                     M[indices[node],indices[neigh]]=self.edge_class[(node,neigh)].count(1)/float(num_edges)
+        print np.sum(M[100,:])
+        print M.sum()
         M=beta*M+(1-beta)/float(M.size)
         values,vectors=eig(M.T)
         largest_index=0
@@ -254,16 +258,18 @@ class Graph:
             ranks[node]=principle_vector[indices[node]]
         return ranks
 if __name__=='__main__':
+    random.seed(10)
     g=Graph(filename='../../data/rawdata.csv')
     g.print_stats()
     print ""
     (train_graphs,test_classes,test_attrs)=g.create_k_subgraphs()
     g.get_attrs_and_labels_specific()
     page_rank=g.HITS()
-    page_rank=g.PageRank(.9)
-    ranks=[]
+    page_rank=g.PageRank()
+"""    ranks=[]
     for node in page_rank:
         ranks.append((page_rank[node],node))
     ranks.sort()
     for i in range(len(ranks)):
         print ranks[i],i
+"""
