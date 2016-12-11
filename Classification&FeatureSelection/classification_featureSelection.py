@@ -12,6 +12,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 import preprocess
 from sklearn.tree import DecisionTreeClassifier
+from graph_features import HITS, PageRank
 
 
 
@@ -41,7 +42,7 @@ def plot_confusion_matrix(cm, classes,normalize=True,title='Confusion matrix',cm
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-def evaluateGaussianSVM(all_attrs,labels,f_selection):
+def evaluateGaussianSVM(all_attrs,labels, ids,f_selection):
 	errors = []
 	recalls = []
 	precisions = []
@@ -55,7 +56,7 @@ def evaluateGaussianSVM(all_attrs,labels,f_selection):
 
 	for j in range(i,17):
 		print j
-		K=10
+		K=5
 		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
 		attrs = all_attrs[0:len(labels),0:j]
 		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16-j,16))
@@ -73,12 +74,16 @@ def evaluateGaussianSVM(all_attrs,labels,f_selection):
 
 		cv=KFold(labels.shape[0],K,shuffle = True)
 		for train_index, test_index in cv:
-		    (pre_attrs,pre_labels) = (attrs[train_index,:],labels[train_index])
+		    (pre_attrs,pre_labels,pre_ids) = (attrs[train_index,:],labels[train_index],ids[train_index,:])
+		    (pre_attrs_test,pre_ids_test) = (attrs[test_index,:],ids[test_index,:])
+		    #(pre_attrs, pre_attrs_test ) = HITS(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+		   # (pre_attrs, pre_attrs_test ) = PageRank(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+
 		   # (pre_attrs, pre_labels) = preprocess.augment(pre_attrs,pre_labels, attr_idxs=range(15),  mult=2)
 		    #m = LogisticRegression(class_weight='balanced', n_jobs=-1)
-		    m = svm.SVC(C=2,class_weight='balanced',kernel='rbf')
+		    m = svm.SVC(C=10,class_weight='balanced',kernel='rbf')
 		    m.fit(pre_attrs,pre_labels)
-		    preds = m.predict(attrs[test_index,:])
+		    preds = m.predict(pre_attrs_test)
 		    wrong += np.sum(labels[test_index] != preds)
 		    correct += np.sum(labels[test_index] == preds)
 
@@ -114,7 +119,7 @@ def evaluateGaussianSVM(all_attrs,labels,f_selection):
 	plt.legend(loc="lower right")
 	plt.show()'''
 
-def evaluateAdaBoost(all_attrs,labels,f_selection):
+def evaluateAdaBoost(all_attrs,labels, ids,f_selection):
 	errors = []
 	recalls = []
 	precisions = []
@@ -143,13 +148,18 @@ def evaluateAdaBoost(all_attrs,labels,f_selection):
 		for train_index, test_index in cv:
 			#m = LogisticRegression(class_weight='balanced', n_jobs=-1)
 		    #m = svm.SVC(C=0.1,class_weight='balanced',kernel='rbf')
-		    (pre_attrs,pre_labels) = (attrs[train_index,:],labels[train_index])
+		    (pre_attrs,pre_labels, pre_ids) = (attrs[train_index,:],labels[train_index],ids[train_index,:])
+		    (pre_attrs_test,pre_ids_test) = (attrs[test_index,:],ids[test_index,:])
+		    #(pre_attrs, pre_attrs_test ) = HITS(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+		    #(pre_attrs, pre_attrs_test ) = PageRank(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+
 		    #(pre_attrs, pre_labels) = preprocess.augment(pre_attrs,pre_labels, attr_idxs=range(15),  mult=5)
 		    #b_m = svm.SVC(probability = True, C=0.1,class_weight='balanced',kernel='rbf')
 		    b_m = DecisionTreeClassifier(max_depth = 1, min_samples_leaf = 1, class_weight = 'balanced')
+		    #b_m = LogisticRegression(class_weight='balanced', n_jobs=-1)
 		    m = AdaBoostClassifier(base_estimator = b_m,n_estimators=200,random_state=1)
 		    m.fit(pre_attrs,pre_labels)
-		    preds = m.predict(attrs[test_index,:])
+		    preds = m.predict(pre_attrs_test)
 		    wrong += np.sum(labels[test_index] != preds)
 		    correct += np.sum(labels[test_index] == preds)
 
@@ -268,18 +278,251 @@ def RandomForest_ConfusionMatrix(attrs,labels):
 	plt.show()
 
 
+def evaluateGaussianSVM_final(all_attrs,labels, ids, f_selection_start=2, exclude_idxs=[]):
+	errors = []
+	recalls = []
+	precisions = []
+	f1s = []
+	aucs = []
+	n_features = []
+	include_features = range(f_selection_start -1)
+	for idx in exclude_idxs:
+		if idx in include_features:
+			include_features.remove(idx)
+	
+	best_fischer = 0
+	m = svm.SVC(C=10,class_weight='balanced',kernel='rbf')
+		    
+	for j in range(f_selection_start-1,all_attrs.shape[1]):
+		if(j not in exclude_idxs):
+			feature_idxs = include_features+[j]
+		else:
+			feature_idxs = include_features
+		K=5
+		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
+		attrs = all_attrs[0:len(labels),feature_idxs]
+		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16-j,16))
+		correct=0
+		wrong=0
+		average_recall=0
+		average_precision=0
+		average_fischer=0
+		average_error=0
+		average_auc = 0
+
+		'''mean_tpr = 0.0
+		mean_fpr = np.linspace(0, 1, 100)
+		roc_auc = 0
+		lw = 2'''
+
+		cv=KFold(labels.shape[0],K,shuffle = True)
+		for train_index, test_index in cv:
+		    (pre_attrs,pre_labels,pre_ids) = (attrs[train_index,:],labels[train_index],ids[train_index,:])
+		    (pre_attrs_test,pre_ids_test) = (attrs[test_index,:],ids[test_index,:])
+		    #(pre_attrs, pre_attrs_test ) = HITS(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+		    (pre_attrs, pre_attrs_test ) = PageRank(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+
+
+		    m.fit(pre_attrs,pre_labels)
+		    preds = m.predict(pre_attrs_test)
+		    wrong += np.sum(labels[test_index] != preds)
+		    correct += np.sum(labels[test_index] == preds)
+
+		    average_recall += 1.0/K * metrics.recall_score(labels[test_index],preds,pos_label = 1)
+		    average_precision += 1.0/K * metrics.precision_score(labels[test_index],preds,pos_label = 1)
+		    average_fischer += 1.0/K * metrics.f1_score(labels[test_index],preds,pos_label = 1)
+		    average_auc += 1.0/K * metrics.roc_auc_score(labels[test_index],preds)
+		    average_error += 1.0/K * float(wrong)/(correct+wrong)
+
+		    '''if j == 16:
+		    	fpr, tpr,thresh = roc_curve(labels[test_index],preds,pos_label =1)
+		    	mean_tpr += interp(mean_fpr, fpr, tpr)
+    			roc_auc += auc(fpr, tpr)'''
+
+        
+		print(j)
+		print(average_fischer)
+		print(best_fischer)
+		if(average_fischer > best_fischer):
+			print("Boo!")
+			precisions.append(average_precision)
+			f1s.append(average_fischer)
+			aucs.append(average_auc)
+			recalls.append(average_recall)
+			errors.append(average_error)
+			n_features.append(j)
+			best_fischer = average_fischer
+			include_features.append(j)
+
+
+	info = np.transpose([n_features,errors,precisions,recalls,f1s,aucs])
+	np.savetxt('gaussianSVM_forwardFSelection.txt',info,fmt='%.5f',header = 'features,  error,  precision,  recall,  fischer, auc')
+	
+	X_train, X_test, y_train, y_test = train_test_split(all_attrs[0:len(labels),include_features], labels, test_size=0.20, random_state=1)
+	m.fit(X_train,y_train)
+	preds = m.predict(X_test)
+
+
+	final_recall =  metrics.recall_score(y_test,preds,pos_label = 1)
+	final_precision =  metrics.precision_score(y_test,preds,pos_label = 1)
+	final_fischer =  metrics.f1_score(y_test,preds,pos_label = 1)
+	final_auc =  metrics.roc_auc_score(y_test,preds)
+	print('recall ', final_recall)
+	print('precision ', final_precision)
+	print('fischer ', final_fischer)
+	print('auc ', final_auc)
+
+	confusion_matrix = metrics.confusion_matrix(y_test,preds)
+	np.set_printoptions(precision=2)
+	class_names = ['Non-Consort','Consort']
+
+	# Plot normalized confusion matrix
+	#plt.figure()
+	#plot_confusion_matrix(confusion_matrix, classes=class_names, normalize=True,
+	#                      title='Gaussian SVM Normalized confusion matrix')
+	#plt.show()
+	
+	'''mean_tpr /= K
+	mean_tpr[-1] = 1.0
+	mean_tpr[0] = 0.0
+	mean_auc = auc(mean_fpr, mean_tpr)
+	plt.plot(mean_fpr, mean_tpr, color='g', linestyle='--',label='Mean ROC (area = %0.2f)' % mean_auc, lw=lw)
+	plt.xlim([-0.05, 1.05])
+	plt.ylim([-0.05, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Receiver operating characteristic example')
+	plt.legend(loc="lower right")
+	plt.show()'''
+
+
+def evaluateAdaBoosting_final(all_attrs,labels, ids, f_selection_start=2, exclude_idxs=[]):
+	errors = []
+	recalls = []
+	precisions = []
+	f1s = []
+	aucs = []
+	n_features = []
+	include_features = range(f_selection_start -1)
+	for idx in exclude_idxs:
+		if idx in include_features:
+			include_features.remove(idx)
+	
+	best_fischer = 0
+	b_m = DecisionTreeClassifier(max_depth = 1, min_samples_leaf = 1, class_weight = 'balanced')
+	#b_m = LogisticRegression(class_weight='balanced', n_jobs=-1)
+	m = AdaBoostClassifier(base_estimator = b_m,n_estimators=200,random_state=1)
+
+	for j in range(f_selection_start-1,all_attrs.shape[1]):
+		if(j not in exclude_idxs):
+			feature_idxs = include_features+[j]
+		else:
+			feature_idxs = include_features
+		K=5
+		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
+		attrs = all_attrs[0:len(labels),feature_idxs]
+		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16-j,16))
+		correct=0
+		wrong=0
+		average_recall=0
+		average_precision=0
+		average_fischer=0
+		average_error=0
+		average_auc = 0
+
+		'''mean_tpr = 0.0
+		mean_fpr = np.linspace(0, 1, 100)
+		roc_auc = 0
+		lw = 2'''
+
+		cv=KFold(labels.shape[0],K,shuffle = True)
+		for train_index, test_index in cv:
+		    (pre_attrs,pre_labels,pre_ids) = (attrs[train_index,:],labels[train_index],ids[train_index,:])
+		    (pre_attrs_test,pre_ids_test) = (attrs[test_index,:],ids[test_index,:])
+		    (pre_attrs, pre_attrs_test ) = HITS(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+		    (pre_attrs, pre_attrs_test ) = PageRank(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+
+		    m.fit(pre_attrs,pre_labels)
+		    
+		    preds = m.predict(pre_attrs_test)
+		    wrong += np.sum(labels[test_index] != preds)
+		    correct += np.sum(labels[test_index] == preds)
+
+		    average_recall += 1.0/K * metrics.recall_score(labels[test_index],preds,pos_label = 1)
+		    average_precision += 1.0/K * metrics.precision_score(labels[test_index],preds,pos_label = 1)
+		    average_fischer += 1.0/K * metrics.f1_score(labels[test_index],preds,pos_label = 1)
+		    average_auc += 1.0/K * metrics.roc_auc_score(labels[test_index],preds)
+		    average_error += 1.0/K * float(wrong)/(correct+wrong)
+
+		    '''if j == 16:
+		    	fpr, tpr,thresh = roc_curve(labels[test_index],preds,pos_label =1)
+		    	mean_tpr += interp(mean_fpr, fpr, tpr)
+    			roc_auc += auc(fpr, tpr)'''
+
+        
+		print(j)
+		print(average_fischer)
+		print(best_fischer)
+		if(average_fischer > best_fischer):
+			print("Boo!")
+			precisions.append(average_precision)
+			f1s.append(average_fischer)
+			aucs.append(average_auc)
+			recalls.append(average_recall)
+			errors.append(average_error)
+			n_features.append(j)
+			best_fischer = average_fischer
+			include_features.append(j)
+
+
+	info = np.transpose([n_features,errors,precisions,recalls,f1s,aucs])
+	np.savetxt('adaBoost_forwardFSelection.txt',info,fmt='%.5f',header = 'features,  error,  precision,  recall,  fischer, auc')
+
+	X_train, X_test, y_train, y_test = train_test_split(all_attrs[0:len(labels),include_features], labels, test_size=0.20, random_state=1)
+	m.fit(X_train,y_train)
+	preds = m.predict(X_test)
+
+
+	final_recall =  metrics.recall_score(y_test,preds,pos_label = 1)
+	final_precision =  metrics.precision_score(y_test,preds,pos_label = 1)
+	final_fischer =  metrics.f1_score(y_test,preds,pos_label = 1)
+	final_auc =  metrics.roc_auc_score(y_test,preds)
+	print('recall ', final_recall)
+	print('precision ', final_precision)
+	print('fischer ', final_fischer)
+	print('auc ', final_auc)
+
+
+	'''mean_tpr /= K
+	mean_tpr[-1] = 1.0
+	mean_tpr[0] = 0.0
+	mean_auc = auc(mean_fpr, mean_tpr)
+	plt.plot(mean_fpr, mean_tpr, color='g', linestyle='--',label='Mean ROC (area = %0.2f)' % mean_auc, lw=lw)
+	plt.xlim([-0.05, 1.05])
+	plt.ylim([-0.05, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Receiver operating characteristic example')
+	plt.legend(loc="lower right")
+	plt.show()'''
+
+
 
 'Importing Data'
 attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16))
 labels=np.genfromtxt('data_file.csv',delimiter=',',usecols=[16],dtype='int')
-(attrs,labels)=preprocess.preprocess_data(attrs,labels, range(15), whitening = False)
-#(attrs, labels) = preprocess.augment(attrs,labels, attr_idxs=range(15),  mult=10)
+ids = np.loadtxt('rawdata.csv',delimiter=',',usecols=range(2),skiprows = 1,dtype='str')
+(attrs,labels, ids)=preprocess.preprocess_data(attrs,labels, ids=ids, whitening = False)
 
 
 'Model Evaluation and Feature Selection Based on Performance Metrics'
-evaluateGaussianSVM(attrs,labels,False)
-#evaluateAdaBoost(attrs,labels,False)
+#evaluateGaussianSVM(attrs,labels, ids,True)
+#evaluateAdaBoost(attrs,labels, ids, True)
 #evaluateRandomForest(attrs,labels,False)
+#evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=3, exclude_idxs=[])
+#evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=16, exclude_idxs=[10,11,12,13,14,15])
+#evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=16, exclude_idxs=[10,11,12,13,14,15])
+evaluateAdaBoosting_final(attrs,labels, ids, f_selection_start=2, exclude_idxs=[])
 
 'Model Metrics for All Features'
 #SVM_ConfusionMatrix(attrs,labels)
