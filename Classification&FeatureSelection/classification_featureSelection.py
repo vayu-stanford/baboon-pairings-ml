@@ -277,7 +277,6 @@ def RandomForest_ConfusionMatrix(attrs,labels):
 	                      title='Random Forest Normalized confusion matrix')
 	plt.show()
 
-
 def evaluateGaussianSVM_final(all_attrs,labels, ids, f_selection_start=2, exclude_idxs=[]):
 	errors = []
 	recalls = []
@@ -298,7 +297,7 @@ def evaluateGaussianSVM_final(all_attrs,labels, ids, f_selection_start=2, exclud
 			feature_idxs = include_features+[j]
 		else:
 			feature_idxs = include_features
-		K=5
+		K=10
 		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
 		attrs = all_attrs[0:len(labels),feature_idxs]
 		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16-j,16))
@@ -362,11 +361,15 @@ def evaluateGaussianSVM_final(all_attrs,labels, ids, f_selection_start=2, exclud
 	m.fit(X_train,y_train)
 	preds = m.predict(X_test)
 
+	info = np.transpose([y_test,preds])
+	np.savetxt('gaussianSVM_predictionsVSTrueLabels.txt',info,fmt='%.5f',header = 'True Labels, Predictions')
+
 
 	final_recall =  metrics.recall_score(y_test,preds,pos_label = 1)
 	final_precision =  metrics.precision_score(y_test,preds,pos_label = 1)
 	final_fischer =  metrics.f1_score(y_test,preds,pos_label = 1)
 	final_auc =  metrics.roc_auc_score(y_test,preds)
+	fpr, tpr,thresholds = roc_curve(y_test,preds,pos_label= 1)
 	print('recall ', final_recall)
 	print('precision ', final_precision)
 	print('fischer ', final_fischer)
@@ -376,11 +379,26 @@ def evaluateGaussianSVM_final(all_attrs,labels, ids, f_selection_start=2, exclud
 	np.set_printoptions(precision=2)
 	class_names = ['Non-Consort','Consort']
 
-	# Plot normalized confusion matrix
-	#plt.figure()
-	#plot_confusion_matrix(confusion_matrix, classes=class_names, normalize=True,
-	#                      title='Gaussian SVM Normalized confusion matrix')
-	#plt.show()
+	#Plot normalized confusion matrix
+	plt.figure()
+	plot_confusion_matrix(confusion_matrix, classes=class_names, normalize=True,
+	                      title='Gaussian SVM Normalized confusion matrix')
+	plt.show()
+
+
+	# Plot ROC Curve
+	plt.figure()
+	lw = 2
+	plt.plot(fpr, tpr, color='darkorange',lw=lw, label='ROC curve (area = %0.2f)' % final_auc)
+	plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Gaussian SVM ROC')
+	plt.legend(loc="lower right")
+	plt.show()
+
 	
 	'''mean_tpr /= K
 	mean_tpr[-1] = 1.0
@@ -394,7 +412,6 @@ def evaluateGaussianSVM_final(all_attrs,labels, ids, f_selection_start=2, exclud
 	plt.title('Receiver operating characteristic example')
 	plt.legend(loc="lower right")
 	plt.show()'''
-
 
 def evaluateAdaBoosting_final(all_attrs,labels, ids, f_selection_start=2, exclude_idxs=[]):
 	errors = []
@@ -411,14 +428,14 @@ def evaluateAdaBoosting_final(all_attrs,labels, ids, f_selection_start=2, exclud
 	best_fischer = 0
 	b_m = DecisionTreeClassifier(max_depth = 1, min_samples_leaf = 1, class_weight = 'balanced')
 	#b_m = LogisticRegression(class_weight='balanced', n_jobs=-1)
-	m = AdaBoostClassifier(base_estimator = b_m,n_estimators=200,random_state=1)
+	m = AdaBoostClassifier(base_estimator = b_m,n_estimators=500,random_state=1)
 
 	for j in range(f_selection_start-1,all_attrs.shape[1]):
 		if(j not in exclude_idxs):
 			feature_idxs = include_features+[j]
 		else:
 			feature_idxs = include_features
-		K=5
+		K=20
 		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
 		attrs = all_attrs[0:len(labels),feature_idxs]
 		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16-j,16))
@@ -482,15 +499,43 @@ def evaluateAdaBoosting_final(all_attrs,labels, ids, f_selection_start=2, exclud
 	m.fit(X_train,y_train)
 	preds = m.predict(X_test)
 
+	info = np.transpose([y_test,preds])
+	np.savetxt('adaBoost_predictionsVSTrueLabels.txt',info,fmt='%.5f',header = 'True Labels, Predictions')
+
 
 	final_recall =  metrics.recall_score(y_test,preds,pos_label = 1)
 	final_precision =  metrics.precision_score(y_test,preds,pos_label = 1)
 	final_fischer =  metrics.f1_score(y_test,preds,pos_label = 1)
 	final_auc =  metrics.roc_auc_score(y_test,preds)
+	fpr, tpr,thresholds = roc_curve(y_test,preds,pos_label= 1)
 	print('recall ', final_recall)
 	print('precision ', final_precision)
 	print('fischer ', final_fischer)
 	print('auc ', final_auc)
+
+	confusion_matrix = metrics.confusion_matrix(y_test,preds)
+	np.set_printoptions(precision=2)
+	class_names = ['Non-Consort','Consort']
+
+	#Plot normalized confusion matrix
+	plt.figure()
+	plot_confusion_matrix(confusion_matrix, classes=class_names, normalize=True,
+	                      title='AdaBoost Normalized confusion matrix')
+	plt.show()
+
+	# Plot ROC Curve
+	plt.figure()
+	lw = 2
+	plt.plot(fpr, tpr, color='darkorange',lw=lw, label='ROC curve (area = %0.2f)' % final_auc)
+	plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('AdaBoost ROC')
+	plt.legend(loc="lower right")
+	plt.show()
+
 
 
 	'''mean_tpr /= K
@@ -522,7 +567,9 @@ ids = np.loadtxt('rawdata.csv',delimiter=',',usecols=range(2),skiprows = 1,dtype
 #evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=3, exclude_idxs=[])
 #evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=16, exclude_idxs=[10,11,12,13,14,15])
 #evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=16, exclude_idxs=[10,11,12,13,14,15])
-evaluateAdaBoosting_final(attrs,labels, ids, f_selection_start=2, exclude_idxs=[])
+
+#evaluateAdaBoosting_final(attrs,labels, ids, f_selection_start=2, exclude_idxs=[])
+evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=2, exclude_idxs=[])
 
 'Model Metrics for All Features'
 #SVM_ConfusionMatrix(attrs,labels)
