@@ -22,11 +22,11 @@ def apply_kmeans_nonconsort(num_clusters, include_transformed):
 
 def main():
     include_transformed=True
-    (X, preds, cluster_centers) = apply_kmeans_consort(4,include_transformed=include_transformed)
+    (X, preds, cluster_centers) = apply_kmeans_consort(5,include_transformed=include_transformed)
     # PCA is faster, but manifold gives better separation
     # pca_vis.pca_vis_2d(X, preds)
     print(cluster_centers)
-    #manifold_vis.manifold_vis_2d(X, preds)
+    manifold_vis.manifold_vis_3d(X, preds)
 
 if __name__=="__main__":
     main()
