@@ -100,24 +100,30 @@
 
 \section{Introduction}
 
-% \lettrine[nindent=0em,lines=3]{T} he mating behavior of a species drives genetic
-% interchange and is a major driver of evolution within populations. Factors that
-% contribute to consortship may range from genetic causes, such as physical traits
-% expressed due to the presence of a gene, to those that are social or behavioral.
-% The contribution of social factors is of particular interest for animals that
-% live in structured groups, where factors such as rank within a social heirarchy
-% may impact mating success.  Investigating this topic will provide deeper insight
-% into the factors of mating success in social mammals, which may be extended to
-% apply to humans as well.\\
+% \lettrine[nindent=0em,lines=3]{T} \\
 
 \lettrine[nindent=0em,lines=3]{W}e apply machine learning methods to
-investigate the behavioral and genetic reasons for success and failure of
-mating between wild baboon pairs. Our analysis applies machine learning methods
-to examine whether successful consortships can be predicted, and whether
-certain behavioral or genetic features are especially relevant in determining
-consortship. Additionally, we investigate whether successful and unsuccessful
-pairs can be clustered, and whether there are certain clusters present in one
-group that are not present in the other.
+investigate the behavioral and genetic reasons for success and failure of mating
+between wild baboon pairs. The mating behavior of a species drives genetic
+interchange and is a major driver of evolution within populations. Factors that
+contribute to consortship may range from genetic causes, such as physical traits
+expressed due to the presence of a gene, to those that are social or behavioral.
+The contribution of social factors is of particular interest for animals that
+live in structured groups, where factors such as rank within a social heirarchy
+may impact mating success.  Investigating this topic will provide deeper insight
+into the factors of mating success in social mammals, which may be extended to
+apply to humans as well.\\
+
+Our analysis applies machine learning methods to examine whether successful
+consortships can be predicted, and whether certain behavioral or genetic
+features are especially relevant in determining consortship. More specifically,
+our input is a set of interactions between wild male and female baboons, where
+the features are various attributes of the pair and the label is whether
+consortship occurred. We try to predict successful consortships by classifying
+by using SVM, AdaBoosting, Random Forest, and graphical edge prediction.
+Moreover, we apply graphical algorithms to try to capture latent features and
+test whether they improve our classification accuracy.  Additionally, we apply
+k-means to see whether successful and unsuccessful pairs can be clustered.
 
 %------------------------------------------------
 
@@ -128,7 +134,8 @@ consortship in male/female baboon pairs in a wild yellow baboon population. They
 found that a mix of both genetic and social factors drive non-random mating
 within populations.
 
-\section{Dataset}
+\section{Dataset and Features}
+\subsection{Description}
 The dataset that we use was collected and analyzed using statistical methods by
 \cite{Tung:2012}. It contains observations about the success of potential baboon
 mating pairs. In particular, it specifies if , male/female baboon pairings were
@@ -136,7 +143,7 @@ successful in consorting when given the opportunity.  There are approximately
 12,000 observations, and the features are a mix of behavioral data such as the
 rank difference between the male and female pair, as well as genetic data, such
 as the estimated genetic distance between the pair. 
-% \subsection{Features}
+
 There are several categories of features present within the dataset.
 \begin{itemize}
   \item{\textbf{Observed biological and genetic features}: These include female age
@@ -150,7 +157,8 @@ There are several categories of features present within the dataset.
     computed by \cite{Tung:2012}. Some of the transformations compute a pairwise
     score based on a combination of the male and female attributes. For example,
     the rank\_interact feature represents the combination of male and female
-    ranks.
+    ranks and the assort\_index uses genetic distance between the pair to
+    calculate a measure of inbreeding avoidance.
     }
   \item{\textbf{Derived Single Features}: The remaining features are single
     raw features which are scaled based on an assumed distribution.  The
@@ -167,73 +175,6 @@ Each datapoint contains an identifier of the male and female pair in an
 interaction that could lead to a consortship and a 0/1 label which indicates
 whether the male and female consorted.
 
-% \section{Preprocessing}
-
-% In the analysis that we have conducted up to this point, we have not performed
-% any preprocessing on the data. We may consider applying additional
-% transformations to the features, such as whitening using PCA if we find that our
-% models are negatively impacted by the colinearity between features.
-
-\section{Methods}
-% \subsection{Materials}
-
-% To perform our analysis, we used the \texttt{scikit-learn} python package. Methods
-% that were not readily available in \texttt{scikit-learn}, such as feature selection, were
-% implemented independently in python.
-
-\subsection{Classification}
-To examine if we can predict consortship, we perform a K-fold validation over
-several linear and non-linear classifiers, each embedded in a forward and
-backward feature selection algorithm framework.\\
-
-The linear classifiers examined are logistic regression and linear SVM, while
-the non-linear classifiers are gaussian and polynomial SVM. For each algorithm,
-we tuned the hyper-parameters (such as the regularization parameter) and we
-ensured that the class weights were balanced, given that the negative
-(non-consort) labels outweigh the positive labels (consort) by 5-to-1. When
-performing K-fold validation with 4 folds, the data was randomly shuffled so as
-to avoid positive labels concentrating in a particular training or test set,
-biasing the performance. Moreover, for each algorithm and feature subset we
-evaluate the error, precision, recall and F1 score as an average on each of
-the K-cluster training and test sets. Finally we store the confusion matrix,
-obtained by running 75-25 hold-out cross-validation with all the features and
-for the models that performed best.
-
-\subsection{Clustering}
-% kmeans on non-consort pairs, examined centroids, used PCA to visualize
-
-We ran the k-means algorithm with 4 clusters on the consorting and
-non-consorting pairs. To visualize the clusters, we then used dimensionality
-reduction techniques such as PCA and t-SNE manifold tool. We also examined
-using affinity propagation for clustering which can automatically determine the
-number of clusters.
-
-\subsection{Graphical Approach}
-
-%------------------------------------------------
-Another approach to predicting consortship is to use the interactions as edges
-and the baboons as nodes. Due to only heterosexual interactions, the resulting
-graph is bipartite. This transforms the classification task to an edge
-prediction task. Most previous work on this has been on just predicting whether
-or not edges exist, not predicting the label of the edge. We adapted current
-methods to predict the label of an edge rather than its existence.\\ 
-
-\cite{Macskassy:2007} use a simple method that computes the similarities of the
-attributes of nodes to determine the weight of latent edges between nodes.
-Because most of the features are not inherent to the baboons, but are
-depdendent on the interaction between individuals, we adapt this method to look
-at the similarity between the proposed edge and already existing edges between
-those two nodes. More formally, if there is some set of nodes $V$ and some set
-of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some
-associated label $l_i\in \{0,1\}$ then to determine the label of a new edge
-$e_n$ between nodes $u$ and $v$ we would compute $$argmax_{label \in \{0,1\}}
-\frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in
-E}1\{l_i=label\}}$$ We implemented this method, and also at a more specific
-method where, instead of looking at all edges, we only look at edges where $u$
-or $v$ are one of the endpoints of the edge. Both of these models are similar
-to locally weighted regression which we implemented as well. \\
-
-\section{Results and Discussion}
 \subsection{Exploratory Data Analysis}
 %\begin{figure}
       %\centering
@@ -241,10 +182,6 @@ to locally weighted regression which we implemented as well. \\
   %\caption{Distribution of features}
   %\label{fig:figure_distrib}
 %\end{figure}
-The features within the dataset seem to have varying distributions. While some
-features, such as the number of males present, seem to have a balanced
-distribution, others, such as the ages and ranks, show a heavy skew with long
-tails.\\
 
 %\begin{figure}[h]
       %\centering
@@ -252,7 +189,7 @@ tails.\\
   %\caption{Distribution of consort/non-consort labels}
   %\label{fig:label_distrib}
 %\end{figure}
-Also, we observe that the labels within the dataset are imbalanced -- there are
+We observe that the labels within the dataset are imbalanced -- there are
 approximately 5 times as many pairs which did not consort than those who did.
 This imbalance may cause an issue in our classification algorithms. To avoid
 this we use the \texttt{weight} for \texttt{scikit-learn}'s classifiers to
@@ -271,21 +208,171 @@ any lower-dimensional separation between the consorting/non-consorting pairs, as
 shown in Figure \ref{fig:pca_vis}.
 This indicates that the classification problem may be inherently
 high-dimensional. The tSNE manifold mapping indicates this as well.
+
+\subsection{Preprocessing}
+
+We experimented with several preprocessing methods for the dataset. We removed
+points that were nearly identical, but had different labels. Additionally, when
+training classification models, we normalized the features, based on the mean
+and standard deviation of the training set. Because our dataset has an imbalance
+between positive and negative labels, we tried augmenting our set by adding in
+synthetic positively labelled points which were derived from existing positively
+labelled points with some small amount of random noise added to each of the
+features. In addition, we considered using PCA whitening, in which the feature
+space used is based on the principal components of the dataset in order to
+reduce correlation across the features. However, we found that augmentation and
+PCA whitening did not improve our results, and so chose not to use these
+techniques.
+
+\section{Methods}
+% \subsection{Materials}
+
+% To perform our analysis, we used the \texttt{scikit-learn} python package. Methods
+% that were not readily available in \texttt{scikit-learn}, such as feature selection, were
+% implemented independently in python.
+
+\subsection{Classification}
+To examine if we can predict consortship, we perform a K-fold validation with 10
+folds over several linear and non-linear classifiers, each embedded in a forward
+feature selection algorithm framework. In general, for each algorithm, we tuned
+the hyper-parameters manually by iteratively running the model with different
+parameters and checking the training and testing errors and F1 scores to ensure
+that we were not overfitting to the training set.  Additionally, we ensured that
+the class weights were balanced, given that the negative (non-consort) labels
+outweigh the positive labels (consort) by 5-to-1. When performing K-fold
+validation, the data was randomly shuffled so as to avoid positive labels
+concentrating in a particular training or test set, biasing the performance.
+Moreover, for each algorithm and feature subset we evaluate the error,
+precision, recall, F1, and AUC scores as an average on
+each of the K-cluster training and test sets.  Finally we store the confusion
+matrix, obtained by running 75-25 hold-out cross-validation with all the
+features and for the models that performed best.
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|}
+    \hline
+    Summary Statistic & Description \\
+    \hline
+    Precision&
+    $\frac{\#\ true\ positive}{\#\ true\ positive + \#\ false\ positive}$\\
+    \hline
+    Recall (F1) Score &
+    $\frac{\#\ true\ positive}{\#\ true\ positive + \#\ false\ negative}$\\
+    \hline
+    Fischer (F1) Score &
+    $\frac{2* precision* recall}{{precision}+{recall}}$\\
+    \hline
+    AUC &
+    Area under ROC curve \\
+    \hline
+  \end{tabular}
+  \caption{Description of summary statistics}
+  \label{tbl:sum_stats}
+\end{table}
+
+ The gaussian SVM
+tries to optimize <<TODO: FORMULA HERE>>. We used a penalty parameter of
+$C=10$.\\
+
+In addition, we examined boosted decision trees with AdaBoosting and Random
+Forests, which are ensemble methods. Both of our ensemble methods use decision
+trees as their constituent classifiers. Decision trees define labels based on a
+tree of thresholds applied to different features.\\
+
+AdaBoosting is trained over several iterations. At each iteration, a weak
+learner is trained on a weighted dataset, where the weight in iteration $t$ is
+given by <<TODO: Formula here>>. We use 8 weak learners in AdaBoosting
+where each learner is a decision tree with a maximum depth of 4.\\
+
+Random forests train several decision trees on a random subset of the features.
+Classifications are then determined by taking a majority vote across the trees.
+We use random forests of 13 decision trees with maximum depth 4 and with the
+maximum number of features set to the square root of the total number of
+features.
+
+% TODO: figure out whether to include subsequent paragraph
+We experimented with several additional classifiers, including logistic
+regression, linear and polynomial SVM, and Naive Bayes. However, these
+classifiers had very poor performance and we have excluded their discussion due
+to space constraints.
+
+\subsection{Graphical Approach}
+
+\subsubsection*{Classification}
+%------------------------------------------------
+Another approach to predicting consortship is to use the interactions as edges
+and the baboons as nodes. Due to only heterosexual interactions, the resulting
+graph is bipartite. This transforms the classification task to an edge
+prediction task. Most previous work on this has been on just predicting whether
+or not edges exist, not predicting the label of the edge. We adapted current
+methods to predict the label of an edge rather than its existence.\\ 
+
+\cite{Macskassy:2007} use a simple method that computes the similarities of the
+attributes of nodes to determine the weight of latent edges between nodes.
+Because most of the features are not inherent to the baboons, but are
+depdendent on the interaction between individuals, we adapt this method to look
+at the similarity between the proposed edge and already existing edges between
+those two nodes. More formally, if there is some set of nodes $V$ and some set
+of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some
+associated label $l_i\in \{0,1\}$ then to determine the label of a new edge
+$e_n$ between nodes $u$ and $v$ we would compute $argmax_{label \in \{0,1\}}
+\frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in
+E}1\{l_i=label\}}$. We implemented this method, and also at a more specific
+method where, instead of looking at all edges, we only look at edges where $u$
+or $v$ are one of the endpoints of the edge. Both of these models are similar
+to locally weighted regression which we implemented as well. \\
+
+\subsubsection*{Additional Features}
+
+In order to try to capture latent features that are not present in the dataset,
+such as the popularity or charisma of individuals, we compute PageRank and HITS
+scores of individual baboons based on their their successful consortships in the
+training set, where nodes are the male and female baboons and edges exist for
+successful consortships.  <<TODO: Description of PageRank and HITS>>. We
+evaluated the effectiveness of adding these features to our classifiers as well
+as just classifying based on these features alone.
+
+\subsection{Clustering}
+% kmeans on non-consort pairs, examined centroids, used PCA to visualize
+
+We ran the k-means algorithm on the consorting and
+non-consorting pairs. k-means clusters the data by first randomly guessing
+centroids of the clusters. Then until convergence is reached the following steps
+are repeated: for each data
+point i is assigned to a group j, $c^{(i)}$, where
+$c^{(i)}:=\arg\min_{j}||x^{(i)}-\mu_j||^2$, where $\mu_j$ is the coordinate of
+the of the estimated centroid of the group. Then for each $j$,
+$\mu_j:=\frac{\sum_{i=1}^m1\{c^{(i)}=j\}x^{(i)}}{\sum_{i=1}^m{c^{(i)}=j}}$.
+To visualize the clusters, we then used dimensionality
+reduction techniques such as PCA and the t-SNE manifold tool. We chose to use 5
+clusters based visualizing the clustering results and choosing the value that
+gave us the cleanest separation.
+
+\section{Results and Discussion}
 \subsection{Classification}
 % confusion matrix
 
-Running forward and backward feature selection shows that, for all the
-classifiers considered, the best performance in terms of the designated metrics
-is achieved when all the 16 derived and non-derived features are present.
+Running forward feature selection shows that, for all the classifiers
+considered, the best performance in terms of the designated metrics is achieved
+with a combination of biological and social features. Additionally, we found that
+the derived features added by the original researchers did not contribute
+significantly to improving the predictive power of our classifiers.\\
+
 Moreover when breaking down the performance of each classifier, the top pick is
-gaussian SVM, followed by linear SVM. The metrics for the former algorithm are
-presented in the following table, along with the confusion matrices for the
-best and second-best classifiers. Interestingly, while the gaussian SVM
-performs better overall in the metrics, linear SVM has a far higher rate of
-correct prediction on the positive labels. While the average errors with
-gaussian SVM are relatively high, the Fischer scores clearly showcase a poor
-weighed average of precision and recall, indicating this algorithm does not
-perform well.\\
+gaussian SVM, followed by AdaBoosting, and Random Forests. However, we note
+that AdaBoosting and Random Forests are more parsimonious and require fewer
+features than the SVM. 
+\\
+
+Since the labels in our dataset are imbalanced, low error rates may mask poor
+performance on positive labels. Thus we focused on examining the Fischer and AUC
+scores, which capture. On the whole, the Fischer and AUC scores are comparable
+across the models that we examined. Based on the relatively low difference
+between the training and testing metrics, we do not believe that we are
+overfitting to our training data, which indicates that we applied sufficient
+regularization to our models.
+\\
+
 \begin{table}[h]
   \centering
   \begin{tabular}{| l |l |c |c|}
@@ -313,7 +400,22 @@ perform well.\\
                                                                      & Consort & 0.277 & 0.723 \\
     \hline
   \end{tabular}
-  \caption{Linear SVM confusion matrix in 75-25 cross-validation.}
+  \caption{AdaBoosting confusion matrix in 75-25 cross-validation.}
+  \label{tbl:cm_lin_vis}
+\end{table}
+\begin{table}[h]
+  \centering
+  \begin{tabular}{| l |l |c |c|}
+    \hline
+    & & \multicolumn{2}{ |c| }{Predicted} \\
+    \hline
+    & & Non-Consort & Consort \\
+    \hline
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.537 & 0.463  \\
+                                                                     & Consort & 0.277 & 0.723 \\
+    \hline
+  \end{tabular}
+  \caption{Random Forest confusion matrix in 75-25 cross-validation}
   \label{tbl:cm_lin_vis}
 \end{table}
 \begin{figure}
@@ -323,6 +425,37 @@ perform well.\\
   \label{fig:rbf_svm_vis}
 \end{figure}
 
+% TODO: populate confusion matrices
+% TODO: additional discussion of confusion matrices
+
+\subsection{Graphical Approach}
+\subsubsection*{Classification}
+
+%------------------------------------------------
+Of the three methods using graph theory that we implemented none performed
+particularly well. For all methods, we used 10 folds of cross-validation
+to get test data and averaged across those folds. We always kept at least one
+one edge between each pair of nodes in the training data. For the latent edge
+prediction we got a F1 score of .08, for the latent edge prediction only using
+edges where one of the endpoints is one of the nodes in the test example we got
+a F1 score of .25. Using locally weighted regression, we got an F1 score of
+.24. While none of these F1 scores are particularly good the more specific
+latent edge prediction is noteworthy in that about one third of examples there
+were no positive classes in the utilized training examples. This guarantees
+that it would predict a negative class, which would drastically hurt the F1
+score. A method to avoid this, such as a back-off model that would
+fallback to another model in such cases would improve our results.\\
+
+\subsubsection*{Additional Features}
+
+%TODO: add figure with metrics for classifers with PageRank and HITS features
+
+We found that adding PageRank and HITS scores improved our classification
+results marginally. One reason for the lack of significant improvement may be
+that these algorithms were designed for general graphs, whereas the graph for
+our dataset is bipartite. 
+
+%TODO: add figure with metrics using only PageRank and HITS (maybe)
 
 \subsection{Clustering}
 % kmeans graphic
@@ -335,62 +468,55 @@ perform well.\\
 % \end{figure}
 \begin{figure}[h]
       \centering
-          \includegraphics[width=0.5\textwidth]{../figs/consort_kmeans_2d_tsne.png}
-  \caption{t-SNE visualization of K-Means with 4 clusters applied on consorting
-  pairs.}
+          \includegraphics[width=0.5\textwidth]{../figs/consort_kmeans_5_3d_tsne.png}
+  \caption{t-SNE visualization of K-Means with 5 clusters applied on consorting
+  pairs. Red: High Male Rank, Cyan: Old Females, Green: Low number of males
+present, Violet: Low number of females present, Yellow: High number of males
+present}
   \label{fig:consort_clustering_vis}
 \end{figure}
 
-The lower-dimensional visualization of consorting clusters  (Figure
-\ref{fig:consort_clustering_vis}) shows cleaner separation for the consorting
-pairs than for the non-consorting pairs. Our initial experimentation with
-affinity propagation led the number of automatically determined clusters
-resulted in over 64 clusters, which is too high for us to interpret reasonably.
+By visualizing clustering results, we found that the clusters for non-consorting
+pairs were not cleanly separated -- it was difficult to cluster non-consorting
+pairs. On the other hand, the lower-dimensional visualization of consorting
+clusters  (Figure \ref{fig:consort_clustering_vis}) shows cleaner separation for
+the consorting pairs than for the non-consorting pairs. This indicates that it
+may not be possible to group non-consortship, there are clusters of consortships
+that share common features.
 
-\subsection{Graphical Approach}
 
-%------------------------------------------------
-Of the three methods using graph theory that we implemented none performed
-particularly well. For all methods, we used 5 folds of cross-validation
-to get test data and averaged across those folds. We always kept at least one
-one edge between each pair of nodes in the training data. For the latent edge
-prediction we got a F1 score of .08, for the latent edge prediction only using
-edges where one of the endpoints is one of the nodes in the test example we got
-a F1 score of .25. Using locally weighted regression, we got an F1 score of
-.24. While none of these F1 scores are particularly good the more specific
-latent edge prediction is noteworthy in that about one third of examples there
-were no positive classes in the utilized training examples. This guarantees
-that it would predict a negative class, which would drastically hurt the F1
-score. A method to avoid this, such as a back-off model that would
-fallback to another model in such cases would improve our results.
-\section{Next Steps}
+\section{Conclusion and Future Work}
 
-The analysis that we have performed until now used the features directly from
-the original dataset. We plan to examine if appyling additional preprocessing to
-the data, such as normalizing ages or applying whitening to the derived features
-can improve our algorithms.\\
+We found that both social and genetic factors are useful in predicting
+consortship, which agrees with the results in \cite{Tung:2012}. However, we
+found that the additional derived features added by in the original study did
+not significantly improve our classification results. Additionally, we found
+that clusters exist within consortships, implying that there are different types
+of consortships.\\
 
-The results obtained through a first pass of linear and non-linear classifiers
-do not measure well in terms of the defined metrics, leaving a large margin of
-improvement in terms of the chosen algorithms and features. Moreover, further
-investigation is necessary to fully understand  the reason why such algorithms
-have performed poorly and why they may or may not be adequate for this
-particular data. \\
+Generally, we found similar classification results with Gaussian SVM,
+AdaBoosting, and Random Forests, with the Gaussian SVM at a slight edge over the
+others. Generally, all of our models sufferred from high rates of false
+negatives, which we believe to be partially attributable to the imbalance of
+positive and negative labels. Additionally, there may be features that impact
+consortship that are not captured by the dataset. We expect that modeling these
+latent features using graphical approaches to be a valuable area of
+investigation. While the graph-based features we added only helped marginally,
+algorithms that are specialized to work on bipartite graphs may provide more
+significant improvement. We do not expect that the classification problem to be
+solved completely, as there may be many factors in the formation of
+relationships between intelligent, social mammals that we cannot capture.
+\\
 
-Additionally, we plan to characterize clusters based on examining the cluster
-centroids. Also, we plan to continue investigating clustering methods,
-especially those that can automatically determine the number of clusters within
-our data, without creating an excessive number of clusters. One potential
-approach may be to use silhouette scores to assign costs for a number of
-clusters.\\
-
-For graphical analysis we will look at models that ignore many of the edge
-attributes and instead focus on what sort of information can be gained purely
-from the graph structure. Specifically we would like to adapt status and
-balance theory to work on bipartite graphs. While these models are unlikely to
-be good classifiers in and of themselves, they will utilize features that other
-models such as SVMs cannot process. We expect ensemble methods with SVMs and
-graph models to provide better performance than using either in isolation.
+If our team had more time to work on this problem, we would explore the
+development of additional graphical methods to supplement our features.
+Additionally, we would try to obtain a dataset that has a larger set of features
+(such as additional phenotypes or genotypic markers), or more datapoints.
+Finally, the dataset that we used was constructed by tracking different packs of
+baboons. It may be interesting to examine whether modeling each pack separately
+would improve our results, and whether different social factors have different
+explanatory power across the groups.
+\\
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
