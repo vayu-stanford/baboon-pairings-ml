@@ -15,7 +15,7 @@ def whiten(attrs):
 def stdize(attrs, attr_idxs = None):
     return scale(attrs) # just standardize for now
 
-def remove_similar_points(attrs, labels, similarity_measure = 0.01):
+def remove_similar_points(attrs, labels, ids, similarity_measure = 0.01):
     dist_vec = pdist(attrs,'euclidean')
     dist_mtx = squareform(dist_vec)
     removal_set = set()
@@ -26,7 +26,9 @@ def remove_similar_points(attrs, labels, similarity_measure = 0.01):
                 removal_set.add(idx_2)
     attrs = np.delete(attrs,list(removal_set),0)
     labels = np.delete(labels,list(removal_set),0)
-    return(attrs,labels)
+    if ids != None:
+        ids = np.delete(ids,list(removal_set),0)
+    return(attrs,labels,ids)
 
 def augment(attrs, labels, augment_label = 1, attr_idxs = None, mult=2, noise_mean=1.0, noise_stdev=0.001):
     if mult < 1:
@@ -54,15 +56,15 @@ def augment(attrs, labels, augment_label = 1, attr_idxs = None, mult=2, noise_me
 
     return(attrs,labels)
 
-def preprocess_data(attrs, labels, augment_attr_idxs = None, whitening=False):
+def preprocess_data(attrs, labels, ids=None, augment_attr_idxs = None, whitening=False):
     if(augment_attr_idxs == None):
         augment_attr_idxs=range(1,attrs.shape[1]) # don't add noise to conceptive
     attrs = stdize(attrs);
-    (attrs, labels) = remove_similar_points(attrs,labels, similarity_measure=0.03)
+    (attrs, labels,ids) = remove_similar_points(attrs,labels, ids, similarity_measure=0.03)
     if(whitening):
         attrs = whiten(attrs);
     '''(attrs, labels) = augment(attrs,labels, attr_idxs=augment_attr_idxs,  mult=2)'''
-    return (attrs,labels)
+    return (attrs,labels,ids)
 
 def main():
     include_transformed = True
