@@ -9,7 +9,8 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import itertools
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier,VotingClassifier
+from sklearn.naive_bayes import GaussianNB
 import preprocess
 from sklearn.tree import DecisionTreeClassifier
 from graph_features import HITS, PageRank
@@ -103,8 +104,8 @@ def evaluateGaussianSVM(all_attrs,labels, ids,f_selection):
 		recalls.append(average_recall)
 		errors.append(average_error)
 
-	info = np.transpose([n_features,errors,precisions,recalls,f1s])
-	np.savetxt('gaussianSVM_forwardFSelection.txt',info,fmt='%.5f',header = 'features,  error,  precision,  recall,  fischer')
+	#info = np.transpose([n_features,errors,precisions,recalls,f1s])
+	#np.savetxt('gaussianSVM_forwardFSelection.txt',info,fmt='%.5f',header = 'features,  error,  precision,  recall,  fischer')
 
 	'''mean_tpr /= K
 	mean_tpr[-1] = 1.0
@@ -551,6 +552,76 @@ def evaluateAdaBoosting_final(all_attrs,labels, ids, f_selection_start=2, exclud
 	plt.legend(loc="lower right")
 	plt.show()'''
 
+def getTestTrainMetrics(attrs,labels,ids):
+
+	all_attrs = np.concatenate((attrs,ids),axis = 1)
+	X_train_pre, X_test_pre, y_train, y_test = train_test_split(all_attrs,labels, test_size=0.20, random_state=1)
+	pre_ids = X_train_pre[:,-2:]
+	X_train = X_train_pre[:,:-2]
+	pre_ids_test = X_test_pre[:,-2:]
+	X_test = X_test_pre[:,:-2]
+	(X_train, X_test) = HITS(pre_ids, X_train, y_train, pre_ids_test, X_test)
+	(X_train, X_test) = PageRank(pre_ids, X_train, y_train, pre_ids_test, X_test)
+
+	#X_train = X_train[:,-2:]
+	#X_test = X_test[0:,-2:]
+
+	svm_m = svm.SVC(C=10,class_weight='balanced',kernel='rbf',probability=False,random_state = 1)
+	svm_m.fit(X_train,y_train)
+	SVM_test_preds = svm_m.predict(X_test)
+	SVM_train_preds = svm_m.predict(X_train)
+	print 'svm test error', 1-metrics.accuracy_score(y_test,SVM_test_preds)
+	print 'svm test f1', metrics.f1_score(y_test,SVM_test_preds,pos_label = 1)
+	print 'svm train error', 1-metrics.accuracy_score(y_train,SVM_train_preds)
+	print 'svm train f1', metrics.f1_score(y_train,SVM_train_preds,pos_label = 1)
+
+	b_m = DecisionTreeClassifier(max_depth = 4, min_samples_leaf = 1, class_weight = 'balanced',max_features=None,random_state = 1)
+	adaBoost_m = AdaBoostClassifier(base_estimator = b_m,n_estimators=8,random_state=1,algorithm = 'SAMME.R')
+	adaBoost_m.fit(X_train,y_train)
+	adaBoost_test_preds = adaBoost_m.predict(X_test)
+	adaBoost_train_preds = adaBoost_m.predict(X_train)
+	print 'adaboost test error', 1-metrics.accuracy_score(y_test,adaBoost_test_preds)
+	print 'adaboost test f1', metrics.f1_score(y_test,adaBoost_test_preds,pos_label = 1)
+	print 'adaboost train error', 1-metrics.accuracy_score(y_train,adaBoost_train_preds)
+	print 'adaboost train f1', metrics.f1_score(y_train,adaBoost_train_preds,pos_label = 1)
+
+	randomForest_m = RandomForestClassifier(n_estimators = 13, max_features='auto', max_depth=4, random_state=1,class_weight='balanced')
+	randomForest_m.fit(X_train,y_train)
+	randomForest_test_preds = randomForest_m.predict(X_test)
+	randomForest_train_preds = randomForest_m.predict(X_train)
+	print 'random forest test error', 1-metrics.accuracy_score(y_test,randomForest_test_preds)
+	print 'random forest test f1', metrics.f1_score(y_test,randomForest_test_preds,pos_label = 1)
+	print 'random forest train error', 1-metrics.accuracy_score(y_train,randomForest_train_preds)
+	print 'random forest train f1', metrics.f1_score(y_train,randomForest_train_preds,pos_label = 1)
+
+	'''gradientBoosting_m = GradientBoostingClassifier(subsample = 0.5,warm_start = False,learning_rate = 0.1,n_estimators = 10,random_state=1,max_depth = 10)
+	gradientBoosting_m.fit(X_train,y_train)
+	gradientBoosting_test_preds = gradientBoosting_m.predict(X_test)
+	gradientBoosting_train_preds = gradientBoosting_m.predict(X_train)
+	print 'gradient boosting test error', 1-metrics.accuracy_score(y_test,gradientBoosting_test_preds)
+	print 'gradient boosting test f1', metrics.f1_score(y_test,gradientBoosting_test_preds,pos_label = 1)
+	print 'gradient boosting train error', 1-metrics.accuracy_score(y_train,gradientBoosting_train_preds)
+	print 'gradient boosting train f1', metrics.f1_score(y_train,gradientBoosting_train_preds,pos_label = 1)
+
+	gaussianNB_m = GaussianNB()
+	gaussianNB_m.fit(X_test,y_test)
+	gaussianNB_test_preds = gaussianNB_m.predict(X_test)
+	gaussianNB_train_preds = gaussianNB_m.predict(X_train)
+	print 'NB test error', 1-metrics.accuracy_score(y_test,gaussianNB_test_preds)
+	print 'NB test f1', metrics.f1_score(y_test,gaussianNB_test_preds,pos_label = 1)
+	print 'NB train error', 1-metrics.accuracy_score(y_train,gaussianNB_train_preds)
+	print 'NB train f1', metrics.f1_score(y_train,gaussianNB_train_preds,pos_label = 1)'''
+
+	votingClassifier_m = VotingClassifier(estimators=[('svm',svm_m),('randForest',randomForest_m),('adaBoost',adaBoost_m)],weights = [1,1,1],n_jobs = 1, voting='hard')
+	#votingClassifier_m = VotingClassifier(estimators=[('svm',svm_m)],n_jobs = 1, voting='hard')
+	votingClassifier_m.fit(X_train,y_train)
+	votingClassifier_test_preds = votingClassifier_m.predict(X_test)
+	votingClassifier_train_preds = votingClassifier_m.predict(X_train)
+	print 'voting classifier test error', 1-metrics.accuracy_score(y_test,votingClassifier_test_preds)
+	print 'voting classifier test f1', metrics.f1_score(y_test,votingClassifier_test_preds,pos_label = 1)
+	print 'voting classifier train error', 1-metrics.accuracy_score(y_train,votingClassifier_train_preds)
+	print 'voting classifier train f1', metrics.f1_score(y_train,votingClassifier_train_preds,pos_label = 1)
+
 
 
 'Importing Data'
@@ -569,9 +640,11 @@ ids = np.loadtxt('rawdata.csv',delimiter=',',usecols=range(2),skiprows = 1,dtype
 #evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=16, exclude_idxs=[10,11,12,13,14,15])
 
 #evaluateAdaBoosting_final(attrs,labels, ids, f_selection_start=2, exclude_idxs=[])
-evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=2, exclude_idxs=[])
+#evaluateGaussianSVM_final(attrs,labels, ids, f_selection_start=2, exclude_idxs=[])
 
 'Model Metrics for All Features'
 #SVM_ConfusionMatrix(attrs,labels)
 #AdaBoost_ConfusionMatrix(attrs,labels)
 #RandomForest_ConfusionMatrix(attrs,labels)
+
+getTestTrainMetrics(attrs,labels,ids)
