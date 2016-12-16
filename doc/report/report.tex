@@ -271,7 +271,7 @@ features and for the models that performed best.
 \end{table}
 
  The gaussian SVM tries to optimize: \\
- $ \min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i$\\ s.t. $ y_i(w^T\phi(x) + b) >= 1-\xi_i$\\ where $\phi(x)$ is the Gaussian feature mapping, (w,b) are the functional margin and $\xi$ is the extent to which misclassified points lie outside the functional margin.
+ $$ \min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i$$ $$ s.t. \ \  y_i(w^T\phi(x) + b) >= 1-\xi_i$$ where $\phi(x)$ is the Gaussian feature mapping, (w,b) are the functional margin and $\xi$ is the extent to which misclassified points lie outside the functional margin.
 We used a penalty parameter of $C=10$.\\
 
 In addition, we examined boosted decision trees with AdaBoosting and Random
@@ -281,12 +281,9 @@ tree of thresholds applied to different features.\\
 
 AdaBoosting is trained over several iterations. At each iteration, a weak
 learner is trained on a weighted dataset, where the weight in iteration $t$ is
-
-given by $$E_t=\sum_i E[F_{t-1}(x_i) + \alpha_t h(x_i)]$$
+given by: $$E_t=\sum_i E[F_{t-1}(x_i) + \alpha_t h(x_i)]$$
 $$\epsilon_m = \frac{\sum_{y_i \ne k_m(x_i)} w_i^m}{\sum_i w_i^m}$$
-$$\alpha_t=\frac{1}{2}ln(\frac{1-\epsilon_t}{1+\epsilon_t})$$. We use 8 weak learners in AdaBoosting
-
-where each learner is a decision tree with a maximum depth of 4.\\
+$$\alpha_t=\frac{1}{2}ln(\frac{1-\epsilon_t}{1+\epsilon_t})$$ We use 8 weak learners in AdaBoosting, where each learner is a decision tree with a maximum depth of 4.\\
 
 Random forests train several decision trees on a random subset of the features.
 Classifications are then determined by taking a majority vote across the trees.
