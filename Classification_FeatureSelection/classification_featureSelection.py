@@ -802,6 +802,7 @@ getTestTrainMetricsSingle(m, attrs[:,ada_features],labels,ids, 'adaBoost')
 
 
 
+'''
 m = RandomForestClassifier(n_estimators = 13, max_features='auto', max_depth=4, random_state=1,class_weight='balanced')
 rf_features = feature_select( m, attrs,labels, ids, 'randomForest')
 #print 'rf_features'
@@ -809,7 +810,6 @@ rf_features = feature_select( m, attrs,labels, ids, 'randomForest')
 getTestTrainMetricsSingle(m, attrs[:,rf_features],labels,ids, 'randomForest')
 #getTestTrainMetricsSingle(m, attrs,labels,ids, 'randomForest_feature')
 
-'''
 m = svm.SVC(C=10,class_weight='balanced',kernel='rbf');
 svm_features = feature_select(m, preprocessed_attrs, preprocessed_labels, preprocessed_ids, 'gaussian_SVM');
 #svm_features = [0,1,2,3,4,5,6,7,8]

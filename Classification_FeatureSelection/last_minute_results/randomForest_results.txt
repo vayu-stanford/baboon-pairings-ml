@@ -1,0 +1,8 @@
+Normalized confusion matrix
+[[ 0.66  0.34]
+ [ 0.36  0.64]]
+ randomForest test error 0.340469328942
+ randomForest test f1 0.343129467832
+ randomForest train error 0.342257001647
+ randomForest train f1 0.324939073924
+

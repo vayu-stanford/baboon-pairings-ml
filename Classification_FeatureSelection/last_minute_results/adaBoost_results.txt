@@ -1,0 +1,8 @@
+Normalized confusion matrix
+[[ 0.65  0.35]
+ [ 0.35  0.65]]
+ adaBoost test error 0.353231782627
+ adaBoost test f1 0.338983050847
+ adaBoost train error 0.328768533773
+ adaBoost train f1 0.377461493469
+
