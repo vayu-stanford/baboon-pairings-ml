@@ -270,8 +270,8 @@ features and for the models that performed best.
   \label{tbl:sum_stats}
 \end{table}
 
- The gaussian SVM
-tries to optimize \[\min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i\] 
+ The gaussian SVM tries to optimize: \\
+ $ \min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i$\\ s.t. $ y_i(w^T\phi(x) + b) >= 1-\xi_i$\\ where $\phi(x)$ is the Gaussian feature mapping.
 We used a penalty parameter of
 $C=10$.\\
 
@@ -317,7 +317,7 @@ of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some
 associated label $l_i\in \{0,1\}$ then to determine the label of a new edge
 $e_n$ between nodes $u$ and $v$ we would compute $argmax_{label \in \{0,1\}}
 \frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in
-E}1\{l_i=label\}}$. Results for this can be seen in \ref{edge_pred}  This is essentially the same as KNN where $K=1$. %We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$. However this performed much worse
+E}1\{l_i=label\}}$. This is essentially the same as KNN where $K=1$. %We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$. However this performed much worse
 
 \subsubsection*{Additional Features}
 
@@ -477,30 +477,7 @@ regularization to our models.
 \subsubsection*{Classification}
 
 %------------------------------------------------
-Of the three methods using graph theory that we implemented none performed
-particularly well. For all methods, we used 10 folds of cross-validation
-to get test data and averaged across those folds. We always kept at least one
-one edge between each pair of nodes in the training data. For the latent edge
-prediction we got a F1 score of .08, for the latent edge prediction only using
-edges where one of the endpoints is one of the nodes in the test example we got
-a F1 score of .25. Using locally weighted regression, we got an F1 score of
-.24. While none of these F1 scores are particularly good the more specific
-latent edge prediction is noteworthy in that about one third of examples there
-were no positive classes in the utilized training examples. This guarantees
-that it would predict a negative class, which would drastically hurt the F1
-score. A method to avoid this, such as a back-off model that would
-fallback to another model in such cases would improve our results.\\
-
-\subsubsection*{Additional Features}
-
-%TODO: add figure with metrics for classifers with PageRank and HITS features
-
-We found that adding PageRank and HITS scores improved our classification
-results marginally. One reason for the lack of significant improvement may be
-that these algorithms were designed for general graphs, whereas the graph for
-our dataset is bipartite. 
-
-%TODO: add figure with metrics using only PageRank and HITS (maybe)
+The edge prediction method in \ref{edge_pred} does quite poorly compared to SVMS and other approaches. It is a very simple classifier so this is not surprising. We tried adding HITS and PageRank scores to the provided features, however there was little improvement in any of the models. However, when using HITS and PageRank as the only features in  \ref{HITS_PageRank} the performance is suprisingly good especially given that there is no information being used other than what baboons consorted in the past. %TODO ADD IN CONFUSION MATRIX WITH LABEL HITS_PageRank
 
 \subsection{Clustering}
 % kmeans graphic
