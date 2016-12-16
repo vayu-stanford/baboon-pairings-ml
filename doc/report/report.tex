@@ -295,7 +295,7 @@ maximum number of features set to the square root of the total number of
 features.
 
 % TODO: figure out whether to include subsequent paragraph
-We experimented with several additional classifiers, including logistic
+We experimented with several additional classifiers with regularization, including logistic
 regression, linear and polynomial SVM, and Naive Bayes. However, these
 classifiers had very poor performance and we have excluded their discussion due
 to space constraints.
@@ -496,7 +496,7 @@ follows: BG - biological/genetic, S: Social}
 \subsubsection*{Classification}
 
 %------------------------------------------------
-The edge prediction method in Table \ref{edge_pred} does quite poorly compared to SVMS and other approaches. It is a very simple classifier so this is not surprising. We tried adding HITS and PageRank scores to the provided features, however there was little improvement in any of the models. However, when using HITS and PageRank as the only features (Table \ref{tbl:page_rank_hits_confusion}) the performance is suprisingly good especially given that there is no information being used other than what baboons consorted in the past. %TODO ADD IN CONFUSION MATRIX WITH LABEL HITS_PageRank
+The edge prediction method in Table \ref{edge_pred} does quite poorly compared to SVM and other approaches, but this is not surprising since it is a very simple classifier. We tried adding HITS and PageRank scores to the provided features, however there was little improvement in any of the models. However, when using HITS and PageRank as the only features (Table \ref{tbl:page_rank_hits_confusion}) the performance is suprisingly good especially given that there is no information being used other than what baboons consorted in the past. %TODO ADD IN CONFUSION MATRIX WITH LABEL HITS_PageRank
 
 \subsection{Clustering}
 \begin{figure}[h]
@@ -505,7 +505,7 @@ The edge prediction method in Table \ref{edge_pred} does quite poorly compared t
   \caption{t-SNE visualization of K-Means with 5 clusters applied on consorting
   pairs. Red: High Male Rank, Cyan: Old Females, Green: Low number of males
 present, Violet: Low number of females present, Yellow: High number of males
-present}
+present.}
   \label{fig:consort_clustering_vis}
 \end{figure}
 
