@@ -271,9 +271,8 @@ features and for the models that performed best.
 \end{table}
 
  The gaussian SVM tries to optimize: \\
- $ \min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i$\\ s.t. $ y_i(w^T\phi(x) + b) >= 1-\xi_i$\\ where $\phi(x)$ is the Gaussian feature mapping.
-We used a penalty parameter of
-$C=10$.\\
+ $ \min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i$\\ s.t. $ y_i(w^T\phi(x) + b) >= 1-\xi_i$\\ where $\phi(x)$ is the Gaussian feature mapping, (w,b) are the functional margin and $\xi$ is the extent to which misclassified points lie outside the functional margin.
+We used a penalty parameter of $C=10$.\\
 
 In addition, we examined boosted decision trees with AdaBoosting and Random
 Forests, which are ensemble methods. Both of our ensemble methods use decision
@@ -282,7 +281,9 @@ tree of thresholds applied to different features.\\
 
 AdaBoosting is trained over several iterations. At each iteration, a weak
 learner is trained on a weighted dataset, where the weight in iteration $t$ is
-given by <<TODO: Formula here>>. We use 8 weak learners in AdaBoosting
+given by:
+
+We use 8 weak learners in AdaBoosting
 where each learner is a decision tree with a maximum depth of 4.\\
 
 Random forests train several decision trees on a random subset of the features.
