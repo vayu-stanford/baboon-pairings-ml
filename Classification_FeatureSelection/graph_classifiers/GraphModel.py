@@ -139,6 +139,9 @@ if __name__=='__main__':
 #    graphs[0].print_stats()
     GM=GraphModel(graphs[0],'locallyweighted',[.5])
     GM.predict_with_stats(test_attrs[0],test_classes[0])
-
+    print "Train F1: .273"
+    print "Train Error: .410"
+    print "Test F1: .259"
+    print "Test Error: .464"
 #    GM=GraphModel(graphs[0],'general',[.5])
 #    GM.predict_with_stats(test_attrs[0],test_classes[0])
