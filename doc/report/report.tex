@@ -316,7 +316,7 @@ of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some
 associated label $l_i\in \{0,1\}$ then to determine the label of a new edge
 $e_n$ between nodes $u$ and $v$ we would compute $argmax_{label \in \{0,1\}}
 \frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in
-E}1\{l_i=label\}}$. This is essentially the same as KNN where $K=1$. We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$
+E}1\{l_i=label\}}$. Results for this can be seen in \ref{edge_pred}  This is essentially the same as KNN where $K=1$. %We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$. However this performed much worse
 
 \subsubsection*{Additional Features}
 
@@ -427,7 +427,7 @@ regularization to our models.
     \hline
   \end{tabular}
   \caption{Edge Prediction in 75-25 cross-validation}
-  \label{tbl:cm_lin_vis}
+  \label{edge_pred}
 \end{table}
 
 \begin{figure}
