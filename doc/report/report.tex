@@ -270,8 +270,8 @@ features and for the models that performed best.
   \label{tbl:sum_stats}
 \end{table}
 
- The gaussian SVM
-tries to optimize \[\min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i\] 
+ The gaussian SVM tries to optimize: \\
+ $ \min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i$\\ s.t. $ y_i(w^T\phi(x) + b) >= 1-\xi_i$\\ where $\phi(x)$ is the Gaussian feature mapping.
 We used a penalty parameter of
 $C=10$.\\
 
