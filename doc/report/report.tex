@@ -381,14 +381,17 @@ significantly to improving the predictive power of our classifiers.\\
         \hline
         Name & Type & Error & F1 & AUC \\
         \hline
-        female\_hybridscore  & BG  & 0.50  & 0.25 & 0.55\\
-        male\_hybridscore  & BG  & 0.48 & 0.25 & 0.56\\
-        female\_gendiversity & BG  & 0.46 & 0.27 & 0.58\\
-        male\_gendiversity & BG  & 0.42 & 0.29 & 0.61\\
-        gen\_distance & BG  & 0.39 & 0.31 & 0.63\\
-        female\_age &  BG  & 0.35 & 0.35  & 0.67\\
-        male\_rank & S & 0.35 & 0.35 & 0.67\\
-        female\_rank & S & 0.32 & 0.36  & 0.67\\
+        male\_rank\_transform & DS & 0.32 & 0.31  & 0.61\\
+        females\_present & S & 0.35 & 0.31  & 0.61\\
+        inbreed\_avoid\_index & DP & 0.33 & 0.32  & 0.62\\
+        female\_age\_transform & DS & 0.31 & 0.32  & 0.62\\
+        gen\_distance & BG & 0.32 & 0.33  & 0.62\\
+        male\_gen\_diversity & BG & 0.32 & 0.33  & 0.64\\
+        male\_hybrid\_score & BG & 0.32 & 0.35  & 0.66\\
+        female\_hybrid\_score & BG & 0.31 & 0.35  & 0.66\\
+        males\_present & S & 0.32 & 0.35  & 0.67\\
+        gen\_dist\_transform & DS & 0.32 & 0.35  & 0.67\\
+        male\_rank & S & 0.32 & 0.36  & 0.67\\
         \hline
       \end{tabular}
       AdaBoosted Decision Trees
@@ -398,7 +401,7 @@ significantly to improving the predictive power of our classifiers.\\
         \hline
         male\_rank & S & 0.33 & 0.31 & 0.62 \\
         male\_hybridscore & DP & 0.37 & 0.32 & 0.64 \\
-        inbreeding\_avoid\_index & DP & 0.36 & 0.32 & 0.64 \\
+        inbreed\_avoid\_index & DP & 0.36 & 0.32 & 0.64 \\
         gen\_distance & BG & 0.37 & 0.33 & 0.64 \\
         males\_present & S & 0.36 & 0.34 & 0.65 \\
         \hline
