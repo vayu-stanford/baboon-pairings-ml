@@ -137,7 +137,7 @@ if __name__=='__main__':
     (graphs,test_classes,test_attrs)=g.create_k_subgraphs()    
 #    g.print_stats()
 #    graphs[0].print_stats()
-    GM=GraphModel(graphs[0],'globaledge',[.5])
+    GM=GraphModel(graphs[0],'locallyweighted',[.5])
     GM.predict_with_stats(test_attrs[0],test_classes[0])
 
 #    GM=GraphModel(graphs[0],'general',[.5])

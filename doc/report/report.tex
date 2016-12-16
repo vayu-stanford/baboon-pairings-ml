@@ -308,8 +308,7 @@ or not edges exist, not predicting the label of the edge. We adapted current
 methods to predict the label of an edge rather than its existence.\\ 
 
 \cite{Macskassy:2007} use a simple method that computes the similarities of the
-attributes of nodes to determine the weight of latent edges between nodes.
-Because most of the features are not inherent to the baboons, but are
+attributes of nodes to determine the weight of latent edges between nodes. Their method is used to determine latent edges in text documents. Because most of the features are not inherent to the baboons, but are
 depdendent on the interaction between individuals, we adapt this method to look
 at the similarity between the proposed edge and already existing edges between
 those two nodes. More formally, if there is some set of nodes $V$ and some set
@@ -317,19 +316,15 @@ of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some
 associated label $l_i\in \{0,1\}$ then to determine the label of a new edge
 $e_n$ between nodes $u$ and $v$ we would compute $argmax_{label \in \{0,1\}}
 \frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in
-E}1\{l_i=label\}}$. We implemented this method, and also at a more specific
-method where, instead of looking at all edges, we only look at edges where $u$
-or $v$ are one of the endpoints of the edge. Both of these models are similar
-to locally weighted regression which we implemented as well. \\
+E}1\{l_i=label\}}$. This is essentially the same as KNN where $K=1$. We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$
 
 \subsubsection*{Additional Features}
 
 In order to try to capture latent features that are not present in the dataset,
-such as the popularity or charisma of individuals, we compute PageRank and HITS
-scores of individual baboons based on their their successful consortships in the
+such as the popularity or charisma of individuals, we compute PageRank and HITS scores of individual baboons based on their their successful consortships in the
 training set, where nodes are the male and female baboons and edges exist for
-successful consortships.  <<TODO: Description of PageRank and HITS>>. We
-evaluated the effectiveness of adding these features to our classifiers as well
+successful consortships.  For both PageRank and HITS we treated baboons as vertices, and consorts between baboons as undirected edges between them, and we ignored non-consorts. For PageRank we then create an adjacency matrix $M$ and then find the eigenvector associated with the principle eigenvalue of $A$ where $A=\beta M+(1-\beta)\cdot[\frac{1}{n}]_{nxn}$ where $\beta$ is used to essentially smooth the distribution. We used $\beta=.1$. The PageRank score of each baboon is the value of the eigenvector at its corresponding index from the adjacency matrix. For HITS we compute the hub and authority score by initializing each female's hub score to 1 and each male's authority score to 1. We then update the hub score of each female to be the sum of the authority score of all males she is connected to divided by that male's degree. We similarly update the authority of each males score. We then normalize the hub and authority scores and then repeat 1000 times. At the end we assign the authority score as their HITS score, and the hubs score of the females as their HITS score.
+We evaluated the effectiveness of adding these features to our classifiers as well
 as just classifying based on these features alone.
 
 \subsection{Clustering}
@@ -418,6 +413,23 @@ regularization to our models.
   \caption{Random Forest confusion matrix in 75-25 cross-validation}
   \label{tbl:cm_lin_vis}
 \end{table}
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{| l |l |c |c|}
+    \hline
+    & & \multicolumn{2}{ |c| }{Predicted} \\
+    \hline
+    & & Non-Consort & Consort \\
+    \hline
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.531 & 0.469  \\
+                                                                     & Consort & 0.434 & 0.566 \\ %F1 score of .259
+    \hline
+  \end{tabular}
+  \caption{Edge Prediction in 75-25 cross-validation}
+  \label{tbl:cm_lin_vis}
+\end{table}
+
 \begin{figure}
       \centering
           \includegraphics[width=0.5\textwidth]{../figs/ClassificationMetrics_RbfSVM.png}
@@ -493,7 +505,7 @@ found that the additional derived features added by in the original study did
 not significantly improve our classification results. Additionally, we found
 that clusters exist within consortships, implying that there are different types
 of consortships.\\
-
+The somewhat comparable performance of HITS and PageRank without any other features is interesting because this means that researchers would only have to gather data on who mated with whom and would still be able to get similar results without having to do genetic tests, figure out how old the baboons were, or any other time and resource intensive data gathering. 
 Generally, we found similar classification results with Gaussian SVM,
 AdaBoosting, and Random Forests, with the Gaussian SVM at a slight edge over the
 others. Generally, all of our models sufferred from high rates of false
