@@ -245,7 +245,7 @@ outweigh the positive labels (consort) by 5-to-1. When performing K-fold
 validation, the data was randomly shuffled so as to avoid positive labels
 concentrating in a particular training or test set, biasing the performance.
 Moreover, for each algorithm and feature subset we evaluate the error,
-precision, recall, F1, and AUC scores as an average on
+precision, F1, and AUC scores as an average on
 each of the K-cluster training and test sets.  Finally we store the confusion
 matrix, obtained by running 75-25 hold-out cross-validation with all the
 features and for the models that performed best.
@@ -285,7 +285,7 @@ AdaBoosting is trained over several iterations. At each iteration, a weak
 learner is trained on a weighted dataset, where the weight in iteration $t$ is
 given by: $$E_t=\sum_i E[F_{t-1}(x_i) + \alpha_t h(x_i)]$$
 $$\epsilon_m = \frac{\sum_{y_i \ne k_m(x_i)} w_i^m}{\sum_i w_i^m}$$
-$$\alpha_t=\frac{1}{2}ln(\frac{1-\epsilon_t}{1+\epsilon_t})$$ where $E_t$ is the training error, $F_{t-1}$ is the current boosted classifier, h(x) is the output of each new weak learner and $\alpha_t$ is the weight of the new learner. To calculate $\alpha_t$, the error rate $\epsilon_m$ needs to be computed first.
+$$\alpha_t=\frac{1}{2}ln(\frac{1-\epsilon_t}{1+\epsilon_t})$$ where $E_t$ is the training error, $F_{t-1}$ is the current boosted classifier, h(x) is the output of each new weak learner and $\alpha_t$ is the weight of the new learner. To calculate $\alpha_t$, the error rate $\epsilon_m$ of the new weak classifier needs to be computed first.
 We use 8 weak learners in AdaBoosting, where each learner is a decision tree with a maximum depth of 4.\\
 
 Random forests train several decision trees on a random subset of the features.
