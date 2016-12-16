@@ -225,11 +225,11 @@ PCA whitening did not improve our results, and so chose not to use these
 techniques.
 
 \section{Methods}
-% \subsection{Materials}
+\subsection{Materials}
 
-% To perform our analysis, we used the \texttt{scikit-learn} python package. Methods
-% that were not readily available in \texttt{scikit-learn}, such as feature selection, were
-% implemented independently in python.
+To perform our analysis, we used the \texttt{scikit-learn} python package (\cite{Pegregosa:2011}). Methods
+that were not readily available in \texttt{scikit-learn}, such as feature selection, were
+implemented independently in python.
 
 \subsection{Classification}
 To examine if we can predict consortship, we perform a K-fold validation with 10
@@ -396,10 +396,10 @@ regularization to our models.
     \hline
     & & \multicolumn{2}{ |c| }{Predicted} \\
     \hline
-    & & Non-Consort & Consort \\
+    & & Consort & Non-Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.69 & 0.31  \\
-                                                                     & Consort & 0.36 & 0.64 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Consort & 0.69 & 0.31  \\
+                                                                     & Non-Consort & 0.36 & 0.64 \\
     \hline
   \end{tabular}
   \caption{Gaussian SVM normalized confusion matrix in 75-25 cross-validation.}
@@ -411,13 +411,13 @@ regularization to our models.
     \hline
     & & \multicolumn{2}{ |c| }{Predicted} \\
     \hline
-    & & Non-Consort & Consort \\
+    & & Consort & Non-Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.6 & 0.4  \\
-                                                                     & Consort & 0.34 & 0.66 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Consort & 0.6 & 0.4  \\
+                                                                     & Non-Consort & 0.34 & 0.66 \\
     \hline
   \end{tabular}
-  \caption{AdaBoosting confusion matrix in 75-25 cross-validation.}
+  \caption{AdaBoosting normalized confusion matrix in 75-25 cross-validation.}
   \label{tbl:cm_lin_vis}
 \end{table}
 \begin{table}[h]
@@ -426,13 +426,13 @@ regularization to our models.
     \hline
     & & \multicolumn{2}{ |c| }{Predicted} \\
     \hline
-    & & Non-Consort & Consort \\
+    & & Consort & Non-Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.64 & 0.36  \\
-                                                                     & Consort & 0.34 & 0.66 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Consort & 0.64 & 0.36  \\
+                                                                     & Non-Consort & 0.34 & 0.66 \\
     \hline
   \end{tabular}
-  \caption{Random Forest confusion matrix in 75-25 cross-validation}
+  \caption{Random Forest normalized confusion matrix in 75-25 cross-validation}
   \label{tbl:cm_lin_vis}
 \end{table}
 
@@ -442,14 +442,29 @@ regularization to our models.
     \hline
     & & \multicolumn{2}{ |c| }{Predicted} \\
     \hline
-    & & Non-Consort & Consort \\
+    & & Consort & Non-Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.531 & 0.469  \\
-                                                                     & Consort & 0.434 & 0.566 \\ %F1 score of .259
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Consort & 0.531 & 0.469  \\
+                                                                     & Non-Consort & 0.434 & 0.566 \\ %F1 score of .259
     \hline
   \end{tabular}
-  \caption{Edge Prediction in 75-25 cross-validation}
+  \caption{Edge Prediction normalized confusion matrix in 75-25 cross-validation}
   \label{edge_pred}
+\end{table}
+\begin{table}[h]
+  \centering
+  \begin{tabular}{| l |l |c |c|}
+    \hline
+    & & \multicolumn{2}{ |c| }{Predicted} \\
+    \hline
+    & & Consort & Non-Consort \\
+    \hline
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Consort & 0.54 & 0.46  \\
+                                                                     & Non-Consort & 0.35 & 0.65 \\
+    \hline
+  \end{tabular}
+  \caption{AdaBoosting normalized confusion matrix using just derived graphical features.}
+  \label{tbl:page_rank_hits_confusion}
 \end{table}
 
 \begin{figure}
@@ -469,7 +484,7 @@ regularization to our models.
         \hline
       \end{tabular}
   \caption{Example run of forward feature selection for Gaussian SVM. Metrics
-    reported are averages over a 10-fold cross validation.
+    reported are averages on the test sets averaged over a 10-fold cross validation.
   Feature types are denoted as follows: BG - biological/genetic, S: Social}
   \label{fig:rbf_svm_feat_selection}
 \end{figure}
@@ -480,17 +495,9 @@ regularization to our models.
 \subsubsection*{Classification}
 
 %------------------------------------------------
-The edge prediction method in \ref{edge_pred} does quite poorly compared to SVMS and other approaches. It is a very simple classifier so this is not surprising. We tried adding HITS and PageRank scores to the provided features, however there was little improvement in any of the models. However, when using HITS and PageRank as the only features in  \ref{HITS_PageRank} the performance is suprisingly good especially given that there is no information being used other than what baboons consorted in the past. %TODO ADD IN CONFUSION MATRIX WITH LABEL HITS_PageRank
+The edge prediction method in Table \ref{edge_pred} does quite poorly compared to SVMS and other approaches. It is a very simple classifier so this is not surprising. We tried adding HITS and PageRank scores to the provided features, however there was little improvement in any of the models. However, when using HITS and PageRank as the only features (Table \ref{tbl:page_rank_hits_confusion}) the performance is suprisingly good especially given that there is no information being used other than what baboons consorted in the past. %TODO ADD IN CONFUSION MATRIX WITH LABEL HITS_PageRank
 
 \subsection{Clustering}
-% kmeans graphic
-% \begin{figure}[h]
-      % \centering
-          % \includegraphics[width=0.5\textwidth]{../figs/non_consort_kmeans_2d_tsne.png}
-  % \caption{t-SNE visualization of K-Means with 4 clusters applied on
-  % non-consorting pairs.}
-  % \label{fig:non_consort_clustering_vis}
-% \end{figure}
 \begin{figure}[h]
       \centering
           \includegraphics[width=0.5\textwidth]{../figs/consort_kmeans_5_3d_tsne.png}
@@ -549,18 +556,6 @@ explanatory power across the groups.
 
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
 
-\bibitem[Tung et al., 2012]{Tung:2012}
-  Jenny Tung, Marie J. E. Charpentier, Sayan Mukherjee, Jeanne Altmann, and Susan C. Alberts (2012)
-\newblock 
-  Genetic Effects on Mating Success and Partner Choice in a Social Mammal.
-\newblock {\em The American Naturalist}, 2012 180:1, 113--129.
-
-\bibitem [Macskassy, 2007]{Macskassy:2007} 
-Sofus A. Macskassy (2007) 
-\newblock
-Improving learning in networked data by combining explicit and mined links
-\newblock{\em Proceedings of the 22nd national conference on Artificial intelligence}, July 22-26, 2007, p.590-595
-
 \bibitem [Domingos, 2002]{Domingos:2002} 
 P. Domingos, M. Richardson (2002) 
 \newblock
@@ -572,7 +567,25 @@ J. Kleinberg
 \newblock
 Authoritative sources in a hyperlinked environment
 \newblock{\em Proceedings 9th ACM-SIAM Symposium on Discrete Algorithms}, 1998
+
+\bibitem [Macskassy, 2007]{Macskassy:2007} 
+Sofus A. Macskassy (2007) 
+\newblock
+Improving learning in networked data by combining explicit and mined links
+\newblock{\em Proceedings of the 22nd national conference on Artificial intelligence}, July 22-26, 2007, p.590-595
  
+\bibitem[Pedregosa, et al. 2011]{Pegregosa:2011}
+  Pedregosa, \em{et al.} (2011)
+  \newblock
+  Scikit-learn: Machine Learning in Python
+  \newblock{JMLR}, 2011 12, 2825--2830.
+
+\bibitem[Tung et al., 2012]{Tung:2012}
+  Jenny Tung, Marie J. E. Charpentier, Sayan Mukherjee, Jeanne Altmann, and Susan C. Alberts (2012)
+\newblock 
+  Genetic Effects on Mating Success and Partner Choice in a Social Mammal.
+\newblock {\em The American Naturalist}, 2012 180:1, 113--129.
+
 \end{thebibliography}
 
 %----------------------------------------------------------------------------------------
