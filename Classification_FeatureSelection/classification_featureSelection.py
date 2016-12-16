@@ -623,81 +623,95 @@ def getTestTrainMetrics(attrs,labels,ids):
 	print 'voting classifier train f1', metrics.f1_score(y_train,votingClassifier_train_preds,pos_label = 1)'''
 
 
-def feature_select(m, all_attrs,labels, ids, model_name='unknown_model', f_selection_start=2, exclude_idxs=[]):
+def feature_select(m, all_attrs,labels, ids, model_name='unknown_model',  exclude_idxs=[]):
 	errors = []
 	recalls = []
 	precisions = []
 	f1s = []
 	aucs = []
 	n_features = []
-	include_features = range(f_selection_start -1)
-	for idx in exclude_idxs:
-		if idx in include_features:
-			include_features.remove(idx)
+	include_features = []
+        remaining_features = range(all_attrs.shape[1])
+        converged = False
 	
-	best_fischer = 0
-	#m = svm.SVC(C=10,class_weight='balanced',kernel='rbf')
-		    
-	for j in range(f_selection_start-1,all_attrs.shape[1]):
-		if(j not in exclude_idxs):
-			feature_idxs = include_features+[j]
-		else:
-			feature_idxs = include_features
-		K=10
-		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
-		attrs = all_attrs[0:len(labels),feature_idxs]
-		#attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16-j,16))
-		correct=0
-		wrong=0
-		average_recall=0
-		average_precision=0
-		average_fischer=0
-		average_error=0
-		average_auc = 0
+        i= 0
+        best_fischer = 0
+        while len(remaining_features)>0 and not converged:
+            print('Iteration %d of feature selection ' % i)
+            average_recall=0
+            average_precision=0
+            average_fischer=0
+            average_error=0
+            average_auc = 0
+            next_feature=-1
 
-		'''mean_tpr = 0.0
-		mean_fpr = np.linspace(0, 1, 100)
-		roc_auc = 0
-		lw = 2'''
+            for j in remaining_features:
+                print('Testing feature %d' % j)
+                feature_idxs = include_features+[j]
+                K=10
+                #attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(j))
+                attrs = all_attrs[0:len(labels),feature_idxs]
+                #attrs=np.loadtxt('data_file.csv',delimiter=',',usecols=range(16-j,16))
+                correct=0
+                wrong=0
+                temp_average_recall=0
+                temp_average_precision=0
+                temp_average_fischer=0
+                temp_average_error=0
+                temp_average_auc = 0
 
-		cv=KFold(labels.shape[0],K,shuffle = True)
-		for train_index, test_index in cv:
-		    (pre_attrs,pre_labels,pre_ids) = (attrs[train_index,:],labels[train_index],ids[train_index,:])
-		    (pre_attrs_test,pre_ids_test) = (attrs[test_index,:],ids[test_index,:])
-		    #(pre_attrs, pre_attrs_test ) = HITS(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
-		    #(pre_attrs, pre_attrs_test ) = PageRank(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+                '''mean_tpr = 0.0
+                mean_fpr = np.linspace(0, 1, 100)
+                roc_auc = 0
+                lw = 2'''
+
+                cv=KFold(labels.shape[0],K,shuffle = True)
+                for train_index, test_index in cv:
+                    (pre_attrs,pre_labels,pre_ids) = (attrs[train_index,:],labels[train_index],ids[train_index,:])
+                    (pre_attrs_test,pre_ids_test) = (attrs[test_index,:],ids[test_index,:])
+                    #(pre_attrs, pre_attrs_test ) = HITS(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
+                    #(pre_attrs, pre_attrs_test ) = PageRank(pre_ids, pre_attrs, pre_labels, pre_ids_test, pre_attrs_test)
 
 
-		    m.fit(pre_attrs,pre_labels)
-		    preds = m.predict(pre_attrs_test)
-		    wrong += np.sum(labels[test_index] != preds)
-		    correct += np.sum(labels[test_index] == preds)
+                    m.fit(pre_attrs,pre_labels)
+                    preds = m.predict(pre_attrs_test)
+                    wrong += np.sum(labels[test_index] != preds)
+                    correct += np.sum(labels[test_index] == preds)
 
-		    average_recall += 1.0/K * metrics.recall_score(labels[test_index],preds,pos_label = 1)
-		    average_precision += 1.0/K * metrics.precision_score(labels[test_index],preds,pos_label = 1)
-		    average_fischer += 1.0/K * metrics.f1_score(labels[test_index],preds,pos_label = 1)
-		    average_auc += 1.0/K * metrics.roc_auc_score(labels[test_index],preds)
-		    average_error += 1.0/K * float(wrong)/(correct+wrong)
+                    temp_average_recall += 1.0/K * metrics.recall_score(labels[test_index],preds,pos_label = 1)
+                    temp_average_precision += 1.0/K * metrics.precision_score(labels[test_index],preds,pos_label = 1)
+                    temp_average_fischer += 1.0/K * metrics.f1_score(labels[test_index],preds,pos_label = 1)
+                    temp_average_auc += 1.0/K * metrics.roc_auc_score(labels[test_index],preds)
+                    temp_average_error += 1.0/K * float(wrong)/(correct+wrong)
 
-		    '''if j == 16:
-		    	fpr, tpr,thresh = roc_curve(labels[test_index],preds,pos_label =1)
-		    	mean_tpr += interp(mean_fpr, fpr, tpr)
-    			roc_auc += auc(fpr, tpr)'''
+                    '''if j == 16:
+                        fpr, tpr,thresh = roc_curve(labels[test_index],preds,pos_label =1)
+                        mean_tpr += interp(mean_fpr, fpr, tpr)
+                        roc_auc += auc(fpr, tpr)'''
 
-        
-		#print(j)
-		#print(average_fischer)
-		#print(best_fischer)
-		if(average_fischer > best_fischer):
-			precisions.append(average_precision)
-			f1s.append(average_fischer)
-			aucs.append(average_auc)
-			recalls.append(average_recall)
-			errors.append(average_error)
-			n_features.append(j)
-			best_fischer = average_fischer
-			include_features.append(j)
+                if(temp_average_fischer > average_fischer):
+                    average_recall=temp_average_recall
+                    average_precision=temp_average_precision
+                    average_fischer=temp_average_fischer
+                    average_error=temp_average_error
+                    average_auc = temp_average_auc
+                    next_feature = j
 
+            if(average_fischer > best_fischer):
+                    print('%d is next feature added' % next_feature)
+                    print('Average F1 score is now %f' % average_fischer)
+                    precisions.append(average_precision)
+                    f1s.append(average_fischer)
+                    aucs.append(average_auc)
+                    recalls.append(average_recall)
+                    errors.append(average_error)
+                    n_features.append(next_feature)
+                    best_fischer = average_fischer
+                    include_features.append(next_feature)
+                    remaining_features.remove(next_feature)
+            else:
+                print('Converged after %d' % i)
+                converged = True
 
 	info = np.transpose([n_features,errors,f1s,aucs])
 	np.savetxt(model_name+'_forwardFSelection.txt',info,fmt='%.5f',header = 'features,  error, fischer, auc')
@@ -778,12 +792,14 @@ ids = np.loadtxt('rawdata.csv',delimiter=',',usecols=range(2),skiprows = 1,dtype
 #AdaBoost_ConfusionMatrix(attrs,labels)
 #RandomForest_ConfusionMatrix(attrs,labels)
 
+
 b_m = DecisionTreeClassifier(max_depth = 4, min_samples_leaf = 1, class_weight = 'balanced',max_features=None,random_state = 1)
 m=AdaBoostClassifier(base_estimator = b_m,n_estimators=8,random_state=1,algorithm = 'SAMME.R')
 ada_features= feature_select( m, attrs,labels, ids, 'adaBoost');
 #print 'ada_features'
 #print ada_features
 getTestTrainMetricsSingle(m, attrs[:,ada_features],labels,ids, 'adaBoost')
+
 
 
 m = RandomForestClassifier(n_estimators = 13, max_features='auto', max_depth=4, random_state=1,class_weight='balanced')
@@ -793,6 +809,7 @@ rf_features = feature_select( m, attrs,labels, ids, 'randomForest')
 getTestTrainMetricsSingle(m, attrs[:,rf_features],labels,ids, 'randomForest')
 #getTestTrainMetricsSingle(m, attrs,labels,ids, 'randomForest_feature')
 
+'''
 m = svm.SVC(C=10,class_weight='balanced',kernel='rbf');
 svm_features = feature_select(m, preprocessed_attrs, preprocessed_labels, preprocessed_ids, 'gaussian_SVM');
 #svm_features = [0,1,2,3,4,5,6,7,8]
@@ -802,6 +819,6 @@ svm_features = feature_select(m, preprocessed_attrs, preprocessed_labels, prepro
 #print preprocessed_attrs
 getTestTrainMetricsSingle(m, preprocessed_attrs[:,svm_features], preprocessed_labels, preprocessed_ids, 'gaussian_SVM')
 #getTestTrainMetricsSingle(m, preprocessed_attrs, preprocessed_labels, preprocessed_ids, 'gaussian_SVM')
-
+'''
 
 #getTestTrainMetrics(attrs,labels,ids)
