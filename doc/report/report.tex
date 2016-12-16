@@ -440,24 +440,6 @@ regularization to our models.
 % TODO: populate confusion matrices
 % TODO: additional discussion of confusion matrices
 
-\subsection{Graphical Approach}
-\subsubsection*{Classification}
-
-%------------------------------------------------
-Of the three methods using graph theory that we implemented none performed
-particularly well. For all methods, we used 10 folds of cross-validation
-to get test data and averaged across those folds. We always kept at least one
-one edge between each pair of nodes in the training data. For the latent edge
-prediction we got a F1 score of .08, for the latent edge prediction only using
-edges where one of the endpoints is one of the nodes in the test example we got
-a F1 score of .25. Using locally weighted regression, we got an F1 score of
-.24. While none of these F1 scores are particularly good the more specific
-latent edge prediction is noteworthy in that about one third of examples there
-were no positive classes in the utilized training examples. This guarantees
-that it would predict a negative class, which would drastically hurt the F1
-score. A method to avoid this, such as a back-off model that would
-fallback to another model in such cases would improve our results.\\
-
 \subsubsection*{Additional Features}
 
 %TODO: add figure with metrics for classifers with PageRank and HITS features
