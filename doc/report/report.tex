@@ -282,7 +282,9 @@ tree of thresholds applied to different features.\\
 
 AdaBoosting is trained over several iterations. At each iteration, a weak
 learner is trained on a weighted dataset, where the weight in iteration $t$ is
-given by <<TODO: Formula here>>. We use 8 weak learners in AdaBoosting
+given by $$E_t=\sum_i E[F_{t-1}(x_i) + \alpha_t h(x_i)]$$
+$$\epsilon_m = \frac{\sum_{y_i \ne k_m(x_i)} w_i^m}{\sum_i w_i^m}$$
+$$\alpha_t=\frac{1}{2}ln(\frac{1-\epsilon_t}{1+\epsilon_t})$$. We use 8 weak learners in AdaBoosting
 where each learner is a decision tree with a maximum depth of 4.\\
 
 Random forests train several decision trees on a random subset of the features.
