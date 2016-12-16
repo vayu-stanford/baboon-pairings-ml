@@ -271,7 +271,8 @@ features and for the models that performed best.
 \end{table}
 
  The gaussian SVM
-tries to optimize <<TODO: FORMULA HERE>>. We used a penalty parameter of
+tries to optimize \[\min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i\] 
+We used a penalty parameter of
 $C=10$.\\
 
 In addition, we examined boosted decision trees with AdaBoosting and Random
