@@ -348,6 +348,24 @@ gave us the cleanest separation.
 \subsection{Classification}
 % confusion matrix
 
+\begin{figure}[h]
+      \centering
+      \begin{tabular}{| l |c |c |c |c|}
+        \hline
+        & \multicolumn{2}{ |c| }{Error} & \multicolumn{2}{ |c| }{F1} \\
+        \hline
+        & Train  & Test & Train  & Test \\
+        \hline
+        Gaussian SVM &  0.286 & 0.339 & 0.438 & 0.363 \\
+        AdaBoosting & 0.351 & 0.394 & 0.369 & 0.319 \\
+        Random Forest & 0.361 & 0.359 & 0.337 & 0.331 \\
+        Edge Prediction & 0.131 & 0.167 & 0.31  & 0.236 \\
+        \hline
+      \end{tabular}
+  \caption{Summary of test/train errors and F1 scores}
+  \label{fig:rbf_svm_vis}
+\end{figure}
+
 Running forward feature selection shows that, for all the classifiers
 considered, the best performance in terms of the designated metrics is achieved
 with a combination of biological and social features. Additionally, we found that
@@ -437,41 +455,22 @@ regularization to our models.
         \hline
         Name & Type & Error & Fischer & AUC \\
         \hline
-        female\_hybridscore  & BG  & 0.421 & 0.279 & 0.588 \\
-        male\_hybridscore  & BG  & 0.392 & 0.279 & 0.588 \\
-        female\_gendiv & BG  & 0.394 & 0.285 & 0.595 \\
-        male\_gendiv & BG  & 0.395 & 0.290 & 0.600 \\
-        gen\_distance  & BG  & 0.386 & 0.293 & 0.604 \\
-        female\_age & BG  & 0.378 & 0.319 & 0.636 \\
-        male\_rank & S & 0.379 & 0.321 & 0.638 \\
-        female\_rank & S & 0.366 & 0.321 & 0.636 \\
-        females\_present & S & 0.375 & 0.322 & 0.637 \\
-        rank\_interact & D & 0.360 & 0.323 & 0.638 \\
+        female\_hybridscore  & BG  & 0.49574 & 0.25053 & 0.55189\\
+        male\_hybridscore  & BG  & 0.47696 & 0.25386 & 0.55718\\
+        female\_gendiversity & BG  & 0.45582 & 0.27118 & 0.58127\\
+        male\_gendiversity & BG  & 0.41964 & 0.29261 & 0.60769\\
+        gen\_distance & BG  & 0.39454 & 0.30763 & 0.62543\\
+        female\_age &  BG  & 0.35172 & 0.3451  & 0.66693\\
+        male\_rank & S & 0.35414 & 0.34855 & 0.66991\\
+        female\_rank & S & 0.32393 & 0.3573  & 0.67459\\
         \hline
       \end{tabular}
-  \caption{AdaBoosting metrics based on number of features selected during forward feature selection.}
+  \caption{Example run of forward feature selection for Gaussian SVM. Metrics
+    reported are averages over a 10-fold cross validation.
+  Feature types are denoted as follows: BG - biological/genetic, S: Social}
   \label{fig:rbf_svm_feat_selection}
 \end{figure}
 
-\begin{figure}
-      \centering
-      \begin{tabular}{| l |c |c |c |c|}
-        \hline
-        & \multicolumn{2}{ |c| }{Error} & \multicolumn{2}{ |c| }{F1} \\
-        \hline
-        & Train  & Test & Train  & Test \\
-        \hline
-        Gaussian SVM &  0.242 & 0.362 & 0.491 & 0.357 \\
-        AdaBoosting & 0.351 & 0.394 & 0.369 & 0.319 \\
-        Random Forest & 0.361 & 0.359 & 0.337 & 0.331 \\
-        Edge Prediction & 0.131 & 0.167 & 0.31  & 0.236 \\
-        \hline
-      \end{tabular}
-  \caption{Summary of test/train errors and F1 scores}
-  \label{fig:rbf_svm_vis}
-\end{figure}
-
-% TODO: populate confusion matrices
 % TODO: additional discussion of confusion matrices
 
 \subsection{Graphical Approach}
