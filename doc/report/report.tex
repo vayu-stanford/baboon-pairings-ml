@@ -281,9 +281,11 @@ tree of thresholds applied to different features.\\
 
 AdaBoosting is trained over several iterations. At each iteration, a weak
 learner is trained on a weighted dataset, where the weight in iteration $t$ is
-given by:
 
-We use 8 weak learners in AdaBoosting
+given by $$E_t=\sum_i E[F_{t-1}(x_i) + \alpha_t h(x_i)]$$
+$$\epsilon_m = \frac{\sum_{y_i \ne k_m(x_i)} w_i^m}{\sum_i w_i^m}$$
+$$\alpha_t=\frac{1}{2}ln(\frac{1-\epsilon_t}{1+\epsilon_t})$$. We use 8 weak learners in AdaBoosting
+
 where each learner is a decision tree with a maximum depth of 4.\\
 
 Random forests train several decision trees on a random subset of the features.
@@ -349,6 +351,24 @@ gave us the cleanest separation.
 \subsection{Classification}
 % confusion matrix
 
+\begin{figure}[h]
+      \centering
+      \begin{tabular}{| l |c |c |c |c|}
+        \hline
+        & \multicolumn{2}{ |c| }{Error} & \multicolumn{2}{ |c| }{F1} \\
+        \hline
+        & Train  & Test & Train  & Test \\
+        \hline
+        Gaussian SVM &  0.286 & 0.339 & 0.438 & 0.363 \\
+        AdaBoosting & 0.351 & 0.394 & 0.369 & 0.319 \\
+        Random Forest & 0.361 & 0.359 & 0.337 & 0.331 \\
+        Edge Prediction & 0.410 & 0.464 & 0.273  & 0.259 \\
+        \hline
+      \end{tabular}
+  \caption{Summary of test/train errors and F1 scores}
+  \label{fig:rbf_svm_vis}
+\end{figure}
+
 Running forward feature selection shows that, for all the classifiers
 considered, the best performance in terms of the designated metrics is achieved
 with a combination of biological and social features. Additionally, we found that
@@ -378,8 +398,8 @@ regularization to our models.
     \hline
     & & Non-Consort & Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.827 & 0.173  \\
-                                                                     & Consort & 0.632 & 0.376 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.69 & 0.31  \\
+                                                                     & Consort & 0.36 & 0.64 \\
     \hline
   \end{tabular}
   \caption{Gaussian SVM normalized confusion matrix in 75-25 cross-validation.}
@@ -393,8 +413,8 @@ regularization to our models.
     \hline
     & & Non-Consort & Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.537 & 0.463  \\
-                                                                     & Consort & 0.277 & 0.723 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.6 & 0.4  \\
+                                                                     & Consort & 0.34 & 0.66 \\
     \hline
   \end{tabular}
   \caption{AdaBoosting confusion matrix in 75-25 cross-validation.}
@@ -408,8 +428,8 @@ regularization to our models.
     \hline
     & & Non-Consort & Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.537 & 0.463  \\
-                                                                     & Consort & 0.277 & 0.723 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.64 & 0.36  \\
+                                                                     & Consort & 0.34 & 0.66 \\
     \hline
   \end{tabular}
   \caption{Random Forest confusion matrix in 75-25 cross-validation}
@@ -434,12 +454,26 @@ regularization to our models.
 
 \begin{figure}
       \centering
-          \includegraphics[width=0.5\textwidth]{../figs/ClassificationMetrics_RbfSVM.png}
-  \caption{Gaussian SVM metrics based on number of features in forward feature selection.}
-  \label{fig:rbf_svm_vis}
+      \begin{tabular}{|l|c|c|c|c|}
+        \hline
+        Name & Type & Error & Fischer & AUC \\
+        \hline
+        female\_hybridscore  & BG  & 0.49574 & 0.25053 & 0.55189\\
+        male\_hybridscore  & BG  & 0.47696 & 0.25386 & 0.55718\\
+        female\_gendiversity & BG  & 0.45582 & 0.27118 & 0.58127\\
+        male\_gendiversity & BG  & 0.41964 & 0.29261 & 0.60769\\
+        gen\_distance & BG  & 0.39454 & 0.30763 & 0.62543\\
+        female\_age &  BG  & 0.35172 & 0.3451  & 0.66693\\
+        male\_rank & S & 0.35414 & 0.34855 & 0.66991\\
+        female\_rank & S & 0.32393 & 0.3573  & 0.67459\\
+        \hline
+      \end{tabular}
+  \caption{Example run of forward feature selection for Gaussian SVM. Metrics
+    reported are averages over a 10-fold cross validation.
+  Feature types are denoted as follows: BG - biological/genetic, S: Social}
+  \label{fig:rbf_svm_feat_selection}
 \end{figure}
 
-% TODO: populate confusion matrices
 % TODO: additional discussion of confusion matrices
 
 \subsection{Graphical Approach}
