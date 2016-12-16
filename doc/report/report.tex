@@ -316,7 +316,7 @@ of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some
 associated label $l_i\in \{0,1\}$ then to determine the label of a new edge
 $e_n$ between nodes $u$ and $v$ we would compute $argmax_{label \in \{0,1\}}
 \frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in
-E}1\{l_i=label\}}$. Results for this can be seen in \ref{edge_pred}  This is essentially the same as KNN where $K=1$. %We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$. However this performed much worse
+E}1\{l_i=label\}}$. This is essentially the same as KNN where $K=1$. %We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$. However this performed much worse
 
 \subsubsection*{Additional Features}
 
@@ -440,16 +440,11 @@ regularization to our models.
 % TODO: populate confusion matrices
 % TODO: additional discussion of confusion matrices
 
-\subsubsection*{Additional Features}
+\subsection{Graphical Approach}
+\subsubsection*{Classification}
 
-%TODO: add figure with metrics for classifers with PageRank and HITS features
-
-We found that adding PageRank and HITS scores improved our classification
-results marginally. One reason for the lack of significant improvement may be
-that these algorithms were designed for general graphs, whereas the graph for
-our dataset is bipartite. 
-
-%TODO: add figure with metrics using only PageRank and HITS (maybe)
+%------------------------------------------------
+The edge prediction method in \ref{edge_pred} does quite poorly compared to SVMS and other approaches. It is a very simple classifier so this is not surprising. We tried adding HITS and PageRank scores to the provided features, however there was little improvement in any of the models. However, when using HITS and PageRank as the only features in  \ref{HITS_PageRank} the performance is suprisingly good especially given that there is no information being used other than what baboons consorted in the past. %TODO ADD IN CONFUSION MATRIX WITH LABEL HITS_PageRank
 
 \subsection{Clustering}
 % kmeans graphic
