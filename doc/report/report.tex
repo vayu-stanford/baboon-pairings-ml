@@ -432,9 +432,24 @@ regularization to our models.
 
 \begin{figure}
       \centering
-          \includegraphics[width=0.5\textwidth]{../figs/ClassificationMetrics_RbfSVM.png}
-  \caption{Gaussian SVM metrics based on number of features in forward feature selection.}
-  \label{fig:rbf_svm_vis}
+      \begin{tabular}{|l|c|c|c|c|}
+        \hline
+        Name & Type & Error & Fischer & AUC \\
+        \hline
+        female\_hybridscore  & BG  & 0.421 & 0.279 & 0.588 \\
+        male\_hybridscore  & BG  & 0.392 & 0.279 & 0.588 \\
+        female\_gendiv & BG  & 0.394 & 0.285 & 0.595 \\
+        male\_gendiv & BG  & 0.395 & 0.290 & 0.600 \\
+        gen\_distance  & BG  & 0.386 & 0.293 & 0.604 \\
+        female\_age & BG  & 0.378 & 0.319 & 0.636 \\
+        male\_rank & S & 0.379 & 0.321 & 0.638 \\
+        female\_rank & S & 0.366 & 0.321 & 0.636 \\
+        females\_present & S & 0.375 & 0.322 & 0.637 \\
+        rank\_interact & D & 0.360 & 0.323 & 0.638 \\
+        \hline
+      \end{tabular}
+  \caption{AdaBoosting metrics based on number of features selected during forward feature selection.}
+  \label{fig:rbf_svm_feat_selection}
 \end{figure}
 
 \begin{figure}
