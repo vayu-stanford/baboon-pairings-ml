@@ -624,6 +624,7 @@ def getTestTrainMetrics(attrs,labels,ids):
 
 
 def feature_select(m, all_attrs,labels, ids, model_name='unknown_model',  exclude_idxs=[]):
+	print model_name
 	errors = []
 	recalls = []
 	precisions = []
@@ -793,23 +794,21 @@ ids = np.loadtxt('rawdata.csv',delimiter=',',usecols=range(2),skiprows = 1,dtype
 #RandomForest_ConfusionMatrix(attrs,labels)
 
 
-'''
-b_m = DecisionTreeClassifier(max_depth = 4, min_samples_leaf = 1, class_weight = 'balanced',max_features=None,random_state = 1)
+'''b_m = DecisionTreeClassifier(max_depth = 4, min_samples_leaf = 1, class_weight = 'balanced',max_features=None,random_state = 1)
 m=AdaBoostClassifier(base_estimator = b_m,n_estimators=8,random_state=1,algorithm = 'SAMME.R')
 ada_features= feature_select( m, attrs,labels, ids, 'adaBoost');
 #print 'ada_features'
 #print ada_features
-getTestTrainMetricsSingle(m, attrs[:,ada_features],labels,ids, 'adaBoost')
+getTestTrainMetricsSingle(m, attrs[:,ada_features],labels,ids, 'adaBoost')'''
 
 
 
-m = RandomForestClassifier(n_estimators = 13, max_features='auto', max_depth=4, random_state=1,class_weight='balanced')
+'''m = RandomForestClassifier(n_estimators = 13, max_features='auto', max_depth=4, random_state=1,class_weight='balanced')
 rf_features = feature_select( m, attrs,labels, ids, 'randomForest')
 #print 'rf_features'
 #print rf_features
 getTestTrainMetricsSingle(m, attrs[:,rf_features],labels,ids, 'randomForest')
-#getTestTrainMetricsSingle(m, attrs,labels,ids, 'randomForest_feature')
-'''
+#getTestTrainMetricsSingle(m, attrs,labels,ids, 'randomForest_feature')'''
 
 m = svm.SVC(C=10,class_weight='balanced',kernel='rbf');
 svm_features = feature_select(m, preprocessed_attrs, preprocessed_labels, preprocessed_ids, 'gaussian_SVM');
