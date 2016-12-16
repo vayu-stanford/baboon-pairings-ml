@@ -376,8 +376,8 @@ regularization to our models.
     \hline
     & & Non-Consort & Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.827 & 0.173  \\
-                                                                     & Consort & 0.632 & 0.376 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.69 & 0.31  \\
+                                                                     & Consort & 0.36 & 0.64 \\
     \hline
   \end{tabular}
   \caption{Gaussian SVM normalized confusion matrix in 75-25 cross-validation.}
@@ -391,8 +391,8 @@ regularization to our models.
     \hline
     & & Non-Consort & Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.537 & 0.463  \\
-                                                                     & Consort & 0.277 & 0.723 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.6 & 0.4  \\
+                                                                     & Consort & 0.34 & 0.66 \\
     \hline
   \end{tabular}
   \caption{AdaBoosting confusion matrix in 75-25 cross-validation.}
@@ -406,8 +406,8 @@ regularization to our models.
     \hline
     & & Non-Consort & Consort \\
     \hline
-    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.537 & 0.463  \\
-                                                                     & Consort & 0.277 & 0.723 \\
+    \parbox[t]{2mm}{\multirow{2}{*}{\rotatebox[origin=c]{90}{True}}} & Non-Consort & 0.64 & 0.36  \\
+                                                                     & Consort & 0.34 & 0.66 \\
     \hline
   \end{tabular}
   \caption{Random Forest confusion matrix in 75-25 cross-validation}
@@ -434,6 +434,24 @@ regularization to our models.
       \centering
           \includegraphics[width=0.5\textwidth]{../figs/ClassificationMetrics_RbfSVM.png}
   \caption{Gaussian SVM metrics based on number of features in forward feature selection.}
+  \label{fig:rbf_svm_vis}
+\end{figure}
+
+\begin{figure}
+      \centering
+      \begin{tabular}{| l |c |c |c |c|}
+        \hline
+        & \multicolumn{2}{ |c| }{Error} & \multicolumn{2}{ |c| }{F1} \\
+        \hline
+        & Train  & Test & Train  & Test \\
+        \hline
+        Gaussian SVM &  0.242 & 0.362 & 0.491 & 0.357 \\
+        AdaBoosting & 0.351 & 0.394 & 0.369 & 0.319 \\
+        Random Forest & 0.361 & 0.359 & 0.337 & 0.331 \\
+        Edge Prediction & 0.131 & 0.167 & 0.31  & 0.236 \\
+        \hline
+      \end{tabular}
+  \caption{Summary of test/train errors and F1 scores}
   \label{fig:rbf_svm_vis}
 \end{figure}
 
