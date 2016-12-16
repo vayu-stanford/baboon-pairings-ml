@@ -323,7 +323,7 @@ E}1\{l_i=label\}}$. This is essentially the same as KNN where $K=1$. We also tri
 In order to try to capture latent features that are not present in the dataset,
 such as the popularity or charisma of individuals, we compute PageRank and HITS scores of individual baboons based on their their successful consortships in the
 training set, where nodes are the male and female baboons and edges exist for
-successful consortships.  For both PageRank and HITS we treated baboons as vertices, and consorts between baboons as undirected edges between them, and we ignored non-consorts. For PageRank we then create an adjacency matrix $M$ and then find the eigenvector associated with the principle eigenvalue of $A$ where $A=\beta M+(1-\beta)\cdot[\frac{1}{n}]_{nxn}$ where $\beta$ is used to essentially smooth the distribution. We used $\beta=.1$. The PageRank score of each baboon is the value of the eigenvector at its corresponding index from the adjacency matrix. For HITS we compute the hub and authority score by initializing each female's hub score to 1 and each male's authority score to 1. We then update the hub score of each female to be the sum of the authority score of all males she is connected to divided by that male's degree. We similarly update the authority of each males score. We then normalize the hub and authority scores and then repeat 1000 times. At the end we assign the authority score as their HITS score, and the hubs score of the females as their HITS score.
+successful consortships.  For both PageRank and HITS we treated baboons as vertices, and consorts between baboons as undirected edges between them, and we ignored non-consorts. For PageRank we use the standard algorithm by \cite{Domingos:2002} then create an adjacency matrix $M$ and then find the eigenvector associated with the principle eigenvalue of $A$ where $A=\beta M+(1-\beta)\cdot[\frac{1}{n}]_{nxn}$ where $\beta$ is used to essentially smooth the distribution. We used $\beta=.1$. The PageRank score of each baboon is the value of the eigenvector at its corresponding index from the adjacency matrix. For HITS we use the standard algorithm by \cite{Kleinberg:1998} compute the hub and authority score by initializing each female's hub score to 1 and each male's authority score to 1. We then update the hub score of each female to be the sum of the authority score of all males she is connected to divided by that male's degree. We similarly update the authority of each males score. We then normalize the hub and authority scores and then repeat 1000 times. At the end we assign the authority score as their HITS score, and the hubs score of the females as their HITS score.
 We evaluated the effectiveness of adding these features to our classifiers as well
 as just classifying based on these features alone.
 
@@ -547,6 +547,18 @@ Sofus A. Macskassy (2007)
 \newblock
 Improving learning in networked data by combining explicit and mined links
 \newblock{\em Proceedings of the 22nd national conference on Artificial intelligence}, July 22-26, 2007, p.590-595
+
+\bibitem [Domingos, 2002]{Domingos:2002} 
+P. Domingos, M. Richardson (2002) 
+\newblock
+ The Intelligent Surfer: Probabilistic Combination of Link and Content Information in PageRank
+\newblock{\em Proceedings NIPS}, 2002
+
+\bibitem [Kleinberg, 1998]{Kleinberg:1998} 
+J. Kleinberg
+\newblock
+Authoritative sources in a hyperlinked environment
+\newblock{\em Proceedings 9th ACM-SIAM Symposium on Discrete Algorithms}, 1998
  
 \end{thebibliography}
 
