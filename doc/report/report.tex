@@ -271,7 +271,8 @@ features and for the models that performed best.
 \end{table}
 
  The gaussian SVM
-tries to optimize <<TODO: FORMULA HERE>>. We used a penalty parameter of
+tries to optimize \[\min_{w,b,\xi} \frac{1}{2} w^Tw + C \sum_{i=1}^{n} \xi_i\] 
+We used a penalty parameter of
 $C=10$.\\
 
 In addition, we examined boosted decision trees with AdaBoosting and Random
@@ -316,14 +317,14 @@ of edges $E$ where each edge $e_i$ has some associated features $f_i$ and some
 associated label $l_i\in \{0,1\}$ then to determine the label of a new edge
 $e_n$ between nodes $u$ and $v$ we would compute $argmax_{label \in \{0,1\}}
 \frac{\sum_{e_i \in E}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in
-E}1\{l_i=label\}}$. This is essentially the same as KNN where $K=1$. We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$
+E}1\{l_i=label\}}$. Results for this can be seen in \ref{edge_pred}  This is essentially the same as KNN where $K=1$. %We also tried the same model except for only looking at edges where one of the endpoints was $u$ or $v$, formally: $argmax_{label \in \{0,1\}} \frac{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}\cdot|e-e_n|_2}{\sum_{e_i \in E:u \in e_i \; or\; v \in e_i}1\{l_i=label\}}$. However this performed much worse
 
 \subsubsection*{Additional Features}
 
 In order to try to capture latent features that are not present in the dataset,
 such as the popularity or charisma of individuals, we compute PageRank and HITS scores of individual baboons based on their their successful consortships in the
 training set, where nodes are the male and female baboons and edges exist for
-successful consortships.  For both PageRank and HITS we treated baboons as vertices, and consorts between baboons as undirected edges between them, and we ignored non-consorts. For PageRank we then create an adjacency matrix $M$ and then find the eigenvector associated with the principle eigenvalue of $A$ where $A=\beta M+(1-\beta)\cdot[\frac{1}{n}]_{nxn}$ where $\beta$ is used to essentially smooth the distribution. We used $\beta=.1$. The PageRank score of each baboon is the value of the eigenvector at its corresponding index from the adjacency matrix. For HITS we compute the hub and authority score by initializing each female's hub score to 1 and each male's authority score to 1. We then update the hub score of each female to be the sum of the authority score of all males she is connected to divided by that male's degree. We similarly update the authority of each males score. We then normalize the hub and authority scores and then repeat 1000 times. At the end we assign the authority score as their HITS score, and the hubs score of the females as their HITS score.
+successful consortships.  For both PageRank and HITS we treated baboons as vertices, and consorts between baboons as undirected edges between them, and we ignored non-consorts. For PageRank we use the standard algorithm by \cite{Domingos:2002} then create an adjacency matrix $M$ and then find the eigenvector associated with the principle eigenvalue of $A$ where $A=\beta M+(1-\beta)\cdot[\frac{1}{n}]_{nxn}$ where $\beta$ is used to essentially smooth the distribution. We used $\beta=.1$. The PageRank score of each baboon is the value of the eigenvector at its corresponding index from the adjacency matrix. For HITS we use the standard algorithm by \cite{Kleinberg:1998} compute the hub and authority score by initializing each female's hub score to 1 and each male's authority score to 1. We then update the hub score of each female to be the sum of the authority score of all males she is connected to divided by that male's degree. We similarly update the authority of each males score. We then normalize the hub and authority scores and then repeat 1000 times. At the end we assign the authority score as their HITS score, and the hubs score of the females as their HITS score.
 We evaluated the effectiveness of adding these features to our classifiers as well
 as just classifying based on these features alone.
 
@@ -427,7 +428,7 @@ regularization to our models.
     \hline
   \end{tabular}
   \caption{Edge Prediction in 75-25 cross-validation}
-  \label{tbl:cm_lin_vis}
+  \label{edge_pred}
 \end{table}
 
 \begin{figure}
@@ -580,6 +581,18 @@ Sofus A. Macskassy (2007)
 \newblock
 Improving learning in networked data by combining explicit and mined links
 \newblock{\em Proceedings of the 22nd national conference on Artificial intelligence}, July 22-26, 2007, p.590-595
+
+\bibitem [Domingos, 2002]{Domingos:2002} 
+P. Domingos, M. Richardson (2002) 
+\newblock
+ The Intelligent Surfer: Probabilistic Combination of Link and Content Information in PageRank
+\newblock{\em Proceedings NIPS}, 2002
+
+\bibitem [Kleinberg, 1998]{Kleinberg:1998} 
+J. Kleinberg
+\newblock
+Authoritative sources in a hyperlinked environment
+\newblock{\em Proceedings 9th ACM-SIAM Symposium on Discrete Algorithms}, 1998
  
 \end{thebibliography}
 
