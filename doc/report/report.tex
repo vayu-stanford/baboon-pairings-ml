@@ -245,8 +245,8 @@ outweigh the positive labels (consort) by 5-to-1. When performing K-fold
 validation, the data was randomly shuffled so as to avoid positive labels
 concentrating in a particular training or test set, biasing the performance.
 Moreover, for each algorithm and feature subset we evaluate the error,
-precision, F1, and AUC scores as an average on
-each of the K-cluster training and test sets.  Finally we store the confusion
+precision, recall, F1, and AUC scores as an average on
+each of the K-cluster training and test sets. Finally we store the confusion
 matrix, obtained by running 75-25 hold-out cross-validation with all the
 features and for the models that performed best.
 \begin{table}[h]
@@ -383,7 +383,7 @@ features than the SVM.
 
 Since the labels in our dataset are imbalanced, low error rates may mask poor
 performance on positive labels. Thus we focused on examining the Fischer and AUC
-scores, which capture. On the whole, the Fischer and AUC scores are comparable
+scores, which capture the performance of the model both in terms of false positives and false negatives. On the whole, the Fischer and AUC scores are comparable
 across the models that we examined. Based on the relatively low difference
 between the training and testing metrics, we do not believe that we are
 overfitting to our training data, which indicates that we applied sufficient
