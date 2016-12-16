@@ -137,12 +137,14 @@ within populations.
 \section{Dataset and Features}
 \subsection{Description}
 The dataset that we use was collected and analyzed using statistical methods by
-\cite{Tung:2012}. It contains observations about the success of potential baboon
-mating pairs. In particular, it specifies if , male/female baboon pairings were
-successful in consorting when given the opportunity.  There are approximately
-12,000 observations, and the features are a mix of behavioral data such as the
-rank difference between the male and female pair, as well as genetic data, such
-as the estimated genetic distance between the pair. 
+\cite{Tung:2012}. It contains observations about the success of potential
+baboon mating pairs. In particular, it specifies if , male/female baboon
+pairings were successful in consorting when given the opportunity.  There are
+approximately 12,000 observations of interactions between 115 females and 121
+males, with 1648 instances of consortship, and the features are a mix of
+behavioral data such as the rank difference between the male and female pair,
+as well as genetic data, such as the estimated genetic distance between the
+pair. 
 
 There are several categories of features present within the dataset.
 \begin{itemize}
@@ -277,7 +279,7 @@ We used a penalty parameter of $C=10$.\\
 In addition, we examined boosted decision trees with AdaBoosting and Random
 Forests, which are ensemble methods. Both of our ensemble methods use decision
 trees as their constituent classifiers. Decision trees define labels based on a
-tree of thresholds applied to different features.\\
+tree of thresholds applied to different features -- they can be considered multi-level decision stumps.\\
 
 AdaBoosting is trained over several iterations. At each iteration, a weak
 learner is trained on a weighted dataset, where the weight in iteration $t$ is
@@ -481,9 +483,10 @@ regularization to our models.
         female\_rank & S & 0.32393 & 0.3573  & 0.67459\\
         \hline
       \end{tabular}
-  \caption{Example run of forward feature selection for Gaussian SVM. Metrics
-    reported are averages on the test sets averaged over a 10-fold cross validation.
-  Feature types are denoted as follows: BG - biological/genetic, S: Social}
+  \caption{Example run of forward feature selection for Gaussian SVM displaying
+  which features were selected. Metrics reported are averages on the test sets
+averaged over a 10-fold cross validation.  Feature types are denoted as
+follows: BG - biological/genetic, S: Social}
   \label{fig:rbf_svm_feat_selection}
 \end{figure}
 
